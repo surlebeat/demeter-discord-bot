@@ -23,7 +23,7 @@ import {checkEndProposal} from './service/discord/proposal/index.js'
     const noiseOriginal = await Jimp.read('./images/noise.png') // Noise image for captcha
 
     // Load last saved Database
-    await loadDb(clientWeb3, db, mutex)
+    // await loadDb(clientWeb3, db, mutex)
 
     // Discord.js client
     const clientDiscord = await createClient(
@@ -39,7 +39,7 @@ import {checkEndProposal} from './service/discord/proposal/index.js'
 
 
         const heartbeat = createHeartBeat(undefined, undefined, [
-            {modulo: 6, func: async () => await persistDb(clientWeb3, db, mutex)},
+            {modulo: 1, func: async () => await persistDb(clientWeb3, db, mutex)},
             {modulo: 2, func: async () => await checkEndRound(db, mutex, {client: clientDiscord})},
             {modulo: 2, func: async () => await checkEndProposal(db, mutex, {client: clientDiscord})},
         ])

@@ -33,6 +33,9 @@ const reputationTop = async (interaction, guildUuid, db, mutex) => {
         logger.debug('Sort user by reputation...')
         const users = Object.values(db.data[guildUuid].users)
             .sort((a, b) => b.reputations[b.reputations.length - 1] - a.reputations[a.reputations.length - 1])
+        logger.debug(db.data[guildUuid])
+        logger.debug(db.data[guildUuid].users)
+        logger.debug(db.data[guildUuid].users.length)
         logger.debug('Sort user by reputation done.')
 
         await interaction

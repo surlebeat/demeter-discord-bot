@@ -43,7 +43,10 @@ const reputationTop = async (interaction, guildUuid, db, mutex) => {
                     .join('\n'),
                 ephemeral: true
             })
-            ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.catch((e) => {
+                logger.error(e);
+                logger.error('Reply interaction failed.');
+            })
 
         return true
     } catch (e) {

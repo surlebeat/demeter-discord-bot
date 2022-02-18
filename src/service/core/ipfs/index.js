@@ -24,9 +24,11 @@ export const persistDb = async (clientWeb3, db, mutex) => {
         logger.debug('Create files with all guild done.')
 
         logger.debug('Upload new backup to IPFS...')
+        logger.debug('files : ');
+        logger.debug(files);
         const cid = await clientWeb3
             ?.put(files)
-            ?.catch(() => '')
+            ?.catch((e) => logger.error(e));
         if (!cid) logger.error('Upload new backup to IPFS failed')
         else logger.info('Upload new backup to IPFS done.')
 
@@ -55,7 +57,7 @@ export const loadDb = async (clientWeb3, db, mutex) => {
                     if(moment(upload?.created)?.isAfter(moment(lastUpload?.created)))lastUpload = upload
                 }
             }   catch (e) {
-                logger.debug('Fetch last directory failed.')
+                logger.debug('Fetch last directory failed :', e)
             }
             if(!lastUpload) throw Error('Fetch last directory failed.')
             logger.debug('Fetch last directory done.')

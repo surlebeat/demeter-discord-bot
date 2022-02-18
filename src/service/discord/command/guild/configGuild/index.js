@@ -380,8 +380,10 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
 
         let isAdmin = interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
 
+        logger.debug('guildUuid ' + guildUuid)
         if (!guildUuid) {
-            if (!isAdmin) return true
+          logger.debug('isAdmin ' + isAdmin)
+          if (!isAdmin) return true
             await initGuild(interaction?.guildId, db, mutex)
             await db.read()
 

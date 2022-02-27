@@ -164,6 +164,8 @@ const testCaptcha = async (interaction, salt, noiseImg, guildDb) => {
                     ?.catch(() => logger.error('Reply interaction failed.'))
 
                 logger.debug('Add captcha role to user...')
+                console.log('Current roles :',interaction.member.roles)
+                console.log('guildDb.config.captchaRole :', guildDb.config.captchaRole)
                 if (guildDb.config.captchaRole) await interaction.member.roles
                     .add(guildDb.config.captchaRole)
                     .catch((e) => {logger.error('Failed to add role captcha'); console.log(e);})

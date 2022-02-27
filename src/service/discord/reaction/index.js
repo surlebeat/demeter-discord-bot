@@ -24,7 +24,6 @@ export const processReaction = async (messageReaction, user, isRemove, db, mutex
 
         const guildUuid = Object.keys(db?.data)
             ?.find(uuid => db?.data[uuid]?.guildDiscordId === messageReaction?.message?.guild?.id)
-        console.log("guildUuid", guildUuid)
         if (!guildUuid) return true
         await processReactionGrant(messageReaction, user, isRemove, guildUuid, db, mutex)
         await processReactionRole(messageReaction, user, isRemove, guildUuid, db, mutex)

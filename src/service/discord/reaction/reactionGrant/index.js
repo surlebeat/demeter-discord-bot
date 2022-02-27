@@ -13,7 +13,6 @@ import {checkGrant} from '../../../core/reputation/index.js'
  */
 export const grantAdd = async (messageReaction, user, guildUuid, db, mutex) => {
     try {
-        console.log("messageReaction", messageReaction)
         if (messageReaction?.message?.author?.id === messageReaction?.client?.user?.id) return false
 
         const receiverDiscordId = messageReaction?.message?.author?.id
@@ -21,9 +20,6 @@ export const grantAdd = async (messageReaction, user, guildUuid, db, mutex) => {
         const roundLength = db?.data[guildUuid]?.rounds?.length
         let sender = {}
         let receivers = {}
-        console.log("receiverDiscordId", receiverDiscordId)
-        console.log("senderDiscordId", senderDiscordId)
-        console.log("roundLength", roundLength)
         if(!receiverDiscordId || !senderDiscordId || !roundLength)return true
 
         logger.debug('Reaction grant saved...')
@@ -223,7 +219,6 @@ export const grantRemove = async (messageReaction, user, guildUuid, db, mutex) =
  */
 export const processReactionGrant = async (messageReaction, user, isRemove, guildUuid, db, mutex) => {
     try {
-        console.log("isRemove", isRemove)
         if (!isRemove && await grantAdd(messageReaction, user, guildUuid, db, mutex)) return true
         if (isRemove && await grantRemove(messageReaction, user, guildUuid, db, mutex)) return true
 

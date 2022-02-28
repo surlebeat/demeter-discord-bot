@@ -107,7 +107,7 @@ const printCaptchaImage = async (interaction, failed, salt, noiseImg, successQty
             .getBuffer(Jimp.MIME_JPEG, (err, buffer) => res(buffer)))
         await interaction
             ?.reply({
-                content: failed ? 'Try again...\n\n' : '' + `Please select the emoji you see in the image(${successQty+1}/3):`,
+                content: failed ? 'Try again...\n\n' : '' + `Please select the emoji you see in the image(${successQty}/3):`,
                 ephemeral: true,
                 files: [buffer],
                 components: [

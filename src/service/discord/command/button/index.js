@@ -16,8 +16,11 @@ export const printButtonCaptcha = async (interaction) => {
             ?.find(d => d?.name === COMMANDS_NAME.BUTTON.CAPTCHA.name)) return false
 
         await interaction
-            ?.reply({content: 'I\'m not a robot\n\n', components: captchaComponents, ephemeral: true})
+            ?.reply({content: 'Done !', ephemeral: true})
             ?.catch(() => logger.error('Reply interaction failed.'))
+        await interaction?.channel
+            ?.send({content: 'I\'m not a robot\n\n', components: captchaComponents, ephemeral: true})
+            ?.catch(() => logger.error('Send message failed.'))
         return true
     } catch (e) {
         logger.error(e)

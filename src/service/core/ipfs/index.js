@@ -69,9 +69,10 @@ export const loadDb = async (clientWeb3, db, mutex) => {
             });
             if (!res || !res?.ok) throw Error('Failed to fetch guild files.')
             logger.debug('Fetch all guild files done.')
-
+            console.log(res)
             logger.debug('Process all guild files...')
             const files = await res?.files()
+            logger.debug('Number of files : ' + files.length)
             if (!files) throw Error('Failed to load files.')
             for (const file of files) {
                 db.data[file.name.replace('.json', '')] = JSON.parse(await file.text())

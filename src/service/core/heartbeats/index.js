@@ -2,6 +2,7 @@ import HeartBeats from 'heartbeats'
 import logger from '../winston/index.js'
 
 export const FIVE_MIN = 300000
+const HEART_RATE = process.env.HEART_RATE || FIVE_MIN
 
 /**
  * Create a HeartBeat
@@ -12,7 +13,7 @@ export const FIVE_MIN = 300000
  */
 const createHeartBeat = (
     heartBeatName='heartbeats',
-    heartRate=FIVE_MIN,
+    heartRate=HEART_RATE,
     events=[{modulo: 1, func: () => logger.info('check')}]
 ) => {
     try {

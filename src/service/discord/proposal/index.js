@@ -36,7 +36,7 @@ export const checkEndProposal = async (db, mutex, discord) => {
                 for (const proposalId in proposals) {
                     const proposal = proposals[proposalId]
                     const endDate = Moment(proposal?.startDate).add(proposal?.duration, 'days')
-                    if (proposal?.endDate || endDate?.isAfter(Moment()))
+                    if (!proposal?.startDate || proposal?.endDate || endDate?.isAfter(Moment()))
                         continue
 
                     logger.debug('Retrieve proposal message...')

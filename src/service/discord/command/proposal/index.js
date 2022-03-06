@@ -37,9 +37,9 @@ const startProposal = async (interaction, guildUuid, db, mutex) => {
         const channelId = messageId ? messageId[messageId.length - 2] : ''
         messageId = messageId ? messageId[messageId.length - 1] : ''
 
-        if (!messageUrl.startsWith('https://discord.com/channels/') || !messageId || !duration || duration < 1) {
+        if (!messageId || !duration || duration < 1) {
             await interaction
-                ?.reply({content: 'Please provide message url and duration...', ephemeral: true})
+                ?.reply({content: 'Please provide message url and duration... Also, make sure the message url starts with https://DISCORD_HOSTNAME/...', ephemeral: true})
                 ?.catch(() => logger.error('Reply interaction failed.'))
             return true
         }

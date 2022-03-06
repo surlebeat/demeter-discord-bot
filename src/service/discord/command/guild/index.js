@@ -32,7 +32,10 @@ const printDbUrl = async (interaction, guildUuid, db, mutex, clientWeb3) => {
 
         await interaction
             ?.reply({content: `https://${lastUpload?.cid}.ipfs.dweb.link/${guildUuid}.json`, ephemeral: true})
-            ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.catch((e) => {
+                console.log(e)
+                logger.error('Reply interaction failed.')
+            })
         return true
     } catch (e) {
         logger.error(e)

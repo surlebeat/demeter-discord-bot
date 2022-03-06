@@ -45,11 +45,8 @@ export const transferMessage = async (messageReaction, user, isRemove, guildUuid
         if (!message) return true
 
         await channel
-            ?.send(`${message?.author} :\n${message?.content}`, message?.attachments && message?.attachments?.size ?  [...message?.attachments?.values()] : {})
+            ?.send(`${message?.author} (transferred by the community) :\n${message?.content}`, message?.attachments && message?.attachments?.size ?  [...message?.attachments?.values()] : {})
             ?.catch(() => logger.error('Failed to transfer message.'))
-        await message?.channel
-            ?.send(`${message?.author}, your message has been transferred by the community to ${channel}.`)
-            ?.catch(() => logger.error('Failed to send notification transfer.'))
         await message
             ?.delete()
             ?.catch(() => logger.error('Failed to remove original message.'))

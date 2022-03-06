@@ -17,6 +17,9 @@ const printDbUrl = async (interaction, guildUuid, db, mutex, clientWeb3) => {
         if (!interaction?.options?.data
             ?.find(d => d?.name === COMMANDS_NAME.GUILD.DB_URL.name)) return false
 
+        await interaction?.deferReply()
+          ?.catch(() => logger.error('Defer reply interaction failed.'))
+
         logger.debug('Fetch last directory...')
         let lastUpload = null
         try {
@@ -31,11 +34,9 @@ const printDbUrl = async (interaction, guildUuid, db, mutex, clientWeb3) => {
         logger.debug('Fetch last directory done.')
 
         await interaction
-            ?.reply({content: `https://${lastUpload?.cid}.ipfs.dweb.link/${guildUuid}.json`, ephemeral: true})
-            ?.catch((e) => {
-                console.log(e)
-                logger.error('Reply interaction failed.')
-            })
+          ?.editReply({content: `https://${lastUpload?.cid}.ipfs.dweb.link/${guildUuid}.json`, ephemeral: true})
+          ?.catch(() => logger.error('Edit reply interaction failed.'))
+
         return true
     } catch (e) {
         logger.error(e)

@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import {Mutex} from 'async-mutex'
 import Jimp from 'jimp'
 import {loadDb, persistDb, makeStorageClient} from './service/core/ipfs/index.js'

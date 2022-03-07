@@ -20,6 +20,7 @@ export const COMMANDS_NAME = {
             ADMIN_ROLE: {name: 'admin-role'},
 
             CAPTCHA_ROLE: {name: 'captcha-role'},
+            CAPTCHA_STEPS: {name: 'captcha-steps'},
 
             DEFAULT_REPUTATION: {name: 'default-reputation'},
 
@@ -215,6 +216,10 @@ export const COMMANDS = [
                         type: ApplicationCommandOptionTypes.ROLE,
                         name: COMMANDS_NAME.GUILD.CONFIG.CAPTCHA_ROLE.name,
                         description: 'Set captcha role',
+                    }, {
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG.CAPTCHA_STEPS.name,
+                        description: 'Set number of required captcha steps',
                     }, {
                         type: ApplicationCommandOptionTypes.NUMBER,
                         name: COMMANDS_NAME.GUILD.CONFIG.DEFAULT_REPUTATION.name,

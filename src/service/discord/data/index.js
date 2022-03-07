@@ -37,6 +37,7 @@ export const makeDiscord = {
      *
      * @param adminRole - Discord admin role
      * @param captchaRole - Discord role applied when user solve captcha
+     * @param captchaSteps - Number of required captcha steps
      * @param minReputationTransfer - Min reputation to transfer a message (0=disabled)
      * @param minReputationToStartProposal - Min reputation to start a vote to make a proposal (0=disabled)
      * @param minReputationToConfirmProposal - Min reputation to accept the result of a proposal (0=disabled)
@@ -48,6 +49,7 @@ export const makeDiscord = {
     makeConfigGuild: (
         adminRole='',
         captchaRole='',
+        captchaSteps=2,
         minReputationTransfer=0,
         minReputationToStartProposal=0,
         minReputationToConfirmProposal=0,
@@ -57,6 +59,7 @@ export const makeDiscord = {
         ) => ({
         adminRole,
         captchaRole,
+        captchaSteps,
         minReputationTransfer,
         minReputationToStartProposal,
         minReputationToConfirmProposal,

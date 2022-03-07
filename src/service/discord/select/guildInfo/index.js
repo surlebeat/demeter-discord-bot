@@ -9,6 +9,7 @@ export const SELECT_GUILD_INFO = {
 export const SELECT_GUILD_INFO_OPTIONS = {
     ADMIN_ROLE: {value: 'admin-role', label: '🤠 admin role'},
     CAPTCHA_ROLE: {value: 'captcha-role', label: '🤖 captcha role'},
+    CAPTCHA_STEPS: {value: 'captcha-steps', label: '🎚️ captcha steps'},
 
     DEFAULT_REPUTATION: {value: 'default-reputation', label: '🐣 Default reputation'},
     ROUND_DURATION: {value: 'round-duration', label: '⏱ Round duration'},
@@ -94,6 +95,29 @@ const printCaptchaRole = async (interaction, guildDb) => {
         await interaction
             ?.reply({content: 'Something went wrong...', ephemeral: true})
             ?.catch(() => logger.error('Reply interaction failed.'))
+        return true
+    }
+}
+
+/**
+ *
+ * @param interaction - Discord interaction
+ * @param guildDb - in-memory database
+ * @returns {Promise<boolean>}
+ */
+const printCaptchaSteps = async (interaction, guildDb) => {
+    try {
+        if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.CAPTCHA_STEPS.value)) return false
+
+        await interaction
+          ?.reply({content: `The verification requires ${guildDb.config.captchaSteps} captcha step(s).`, ephemeral: true})
+          ?.catch(() => logger.error('Reply interaction failed.'))
+        return true
+    } catch (e) {
+        logger.error(e)
+        await interaction
+          ?.reply({content: 'Something went wrong...', ephemeral: true})
+          ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     }
 }
@@ -587,6 +611,7 @@ export const printGuildInfo = async (interaction, guildUuid, db) => {
 
         if (await printAdminRole(interaction, guildDb)) return true
         if (await printCaptchaRole(interaction, guildDb)) return true
+        if (await printCaptchaSteps(interaction, guildDb)) return true
 
         if (await printDefaultReputation(interaction, guildDb)) return true
         if (await printRoundDuration(interaction, guildDb)) return true

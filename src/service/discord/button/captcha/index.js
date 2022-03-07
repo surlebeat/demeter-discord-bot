@@ -27,9 +27,10 @@ export const captchaComponents = [new MessageActionRow()
  * @param salt - Salt to generate a hash to hide the correct button
  * @param successQty - How much success captcha solved
  * @param skipCheck - Skip check of interaction.customId, used when not the first captcha to solve
+ * @param captchaSteps - Number of required captcha steps
  * @returns {Promise<boolean>}
  */
-const printCaptchaImage = async (interaction, failed, salt, noiseImg, successQty, skipCheck) => {
+const printCaptchaImage = async (interaction, failed, salt, noiseImg, successQty, skipCheck, captchaSteps) => {
     try {
         if (!skipCheck && !failed && interaction.customId !== BUTTON_CAPTCHA.VERIFY.customId) return false
 
@@ -107,7 +108,7 @@ const printCaptchaImage = async (interaction, failed, salt, noiseImg, successQty
             .getBuffer(Jimp.MIME_JPEG, (err, buffer) => res(buffer)))
         await interaction
             ?.reply({
-                content: failed ? 'Try again...\n\n' : '' + `Please select the emoji you see in the image(${successQty+1}/3):`,
+                content: failed ? 'Try again...\n\n' : '' + `Please select the emoji you see in the image ${captchaSteps > 1 ? `(${successQty+1}/${captchaSteps})` : ''}:`,
                 ephemeral: true,
                 files: [buffer],
                 components: [
@@ -129,6 +130,30 @@ const printCaptchaImage = async (interaction, failed, salt, noiseImg, successQty
 }
 
 /**
+ * Add captcha role to user
+ * @param interaction - Discord interaction
+ * @param guildDb - In-memory database
+ * @returns {Promise<boolean>}
+ */
+async function addCaptchaRole(interaction, guildDb) {
+    await interaction
+      ?.reply({
+          content: 'Well done!\n' +
+            'You are now verified.', components: [], files: [], ephemeral: true
+      })
+      ?.catch(() => logger.error('Reply interaction failed.'))
+
+    logger.debug('Add captcha role to user...')
+    if (guildDb.config.captchaRole) await interaction.member.roles
+      .add(guildDb.config.captchaRole)
+      .catch((e) => {
+          logger.error('Failed to add role captcha');
+          console.log(e);
+      })
+    logger.debug('Add captcha role to user done.')
+}
+
+/**
  * Check if the emoji selected by the user is the good one, and ask new one or apply captcha role if 3 done
  * @param interaction - Discord interaction
  * @param salt - Salt to generate a hash to hide the correct button
@@ -145,33 +170,32 @@ const testCaptcha = async (interaction, salt, noiseImg, guildDb) => {
                 .createHash('sha256')
                 .update(salt[interaction.member.id] + 'true0')
                 .digest('hex')}`:
-                await printCaptchaImage(interaction, false, salt, noiseImg, 1, true)
+                if(guildDb.config.captchaSteps === 1) {
+                    await addCaptchaRole(interaction, guildDb)
+                } else {
+                    await printCaptchaImage(interaction, false, salt, noiseImg, 1, true, guildDb.config.captchaSteps)
+                }
                 break
             case `captcha-${crypto
                 .createHash('sha256')
                 .update(salt[interaction.member.id] + 'true1')
                 .digest('hex')}`:
-                await printCaptchaImage(interaction, false, salt, noiseImg, 2, true)
+                if(guildDb.config.captchaSteps === 2) {
+                    await addCaptchaRole(interaction, guildDb)
+                } else {
+                    await printCaptchaImage(interaction, false, salt, noiseImg, 2, true, guildDb.config.captchaSteps)
+                }
                 break
             case `captcha-${crypto
                 .createHash('sha256')
                 .update(salt[interaction.member.id] + 'true2')
                 .digest('hex')}`:
 
-                await interaction
-                    ?.reply({content: 'Well done!\n' +
-                            'You are now verified.', components: [], files: [], ephemeral: true})
-                    ?.catch(() => logger.error('Reply interaction failed.'))
-
-                logger.debug('Add captcha role to user...')
-                if (guildDb.config.captchaRole) await interaction.member.roles
-                    .add(guildDb.config.captchaRole)
-                    .catch((e) => {logger.error('Failed to add role captcha'); console.log(e);})
-                logger.debug('Add captcha role to user done.')
+                await addCaptchaRole(interaction, guildDb);
 
                 break
             default:
-                await printCaptchaImage(interaction, true, salt, noiseImg, 0, false)
+                await printCaptchaImage(interaction, true, salt, noiseImg, 0, false, guildDb.config.captchaSteps)
                 break
         }
 
@@ -198,7 +222,7 @@ export const printCaptcha = async (interaction, guildUuid, db, salt, noiseImg) =
     try {
         const guildDb = db.data[guildUuid]
 
-        if (await printCaptchaImage(interaction, false, salt, noiseImg, 0, false)) return true
+        if (await printCaptchaImage(interaction, false, salt, noiseImg, 0, false, guildDb.config.captchaSteps)) return true
         if (await testCaptcha(interaction, salt, noiseImg, guildDb)) return true
 
         return false

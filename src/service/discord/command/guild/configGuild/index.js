@@ -46,6 +46,22 @@ export const setCaptchaRole = async (captchaRole, guildUuid, db, mutex) => basic
     }, db, mutex)
 
 /**
+ * Update the number of captcha required steps
+ * @param captchaSteps - Number of steps
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setCaptchaSteps = async (captchaSteps, guildUuid, db, mutex) => basicSetter(
+  guildUuid,
+  async () => captchaSteps > 0 && captchaSteps <= 3,
+  (guildDb) => {
+    guildDb.config.captchaSteps = captchaSteps
+    return guildDb
+  }, db, mutex)
+
+/**
  * Update the guild discord matching quantity
  * @param matching - The matching quantity
  * @param guildUuid - Guild unique identifier
@@ -408,6 +424,11 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
             if(!await setCaptchaRole(captchaRole, guildUuid, db, mutex))
                 response += ''
 
+        const captchaSteps = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.CAPTCHA_STEPS.name)?.value
+        if (captchaSteps)
+          if(!await setCaptchaSteps(captchaSteps, guildUuid, db, mutex))
+            response += 'Number of captcha steps need to be > 0 and <= 3\n'
+
         const defaultReputation = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.DEFAULT_REPUTATION.name)?.value
         if (typeof defaultReputation === 'number')
             if(!await setDefaultReputation(defaultReputation, guildUuid, db, mutex))
@@ -416,7 +437,7 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
         const discordMatching = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.DISCORD_MATCHING.name)?.value
         if (typeof discordMatching === 'number')
             if(!await setMatchingDiscord(discordMatching, guildUuid, db, mutex))
-                response += 'Default reputation for Quadratic funding, need to be >= 0\n'
+                response += 'Default reputation for Quadratic funding need to be >= 0\n'
 
         const duration = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.DURATION.name)?.value
         if (typeof duration === 'number')

@@ -9,6 +9,7 @@ import processCommand from './service/discord/command/index.js'
 import {checkEndRound} from './service/core/reputation/index.js'
 import {processReaction} from './service/discord/reaction/index.js'
 import {checkEndProposal} from './service/discord/proposal/index.js'
+import logger from './service/core/winston/index.js';
 
 (async () => {
     process.env.SALT = {}
@@ -38,10 +39,39 @@ import {checkEndProposal} from './service/discord/proposal/index.js'
         (interaction) => processCommand(interaction, db, mutex, salt, noiseOriginal, clientWeb3),
         async (guild) => await checkWhenNewGuild(guild),)
 
+    const heartbeat = createHeartBeat(undefined, undefined, [
+        {modulo: 6, func: async () => await persistDb(clientWeb3, db, mutex)},
+        {modulo: 2, func: async () => await checkEndRound(db, mutex, {client: clientDiscord})},
+        {modulo: 2, func: async () => await checkEndProposal(db, mutex, {client: clientDiscord})},
+    ])
 
-        const heartbeat = createHeartBeat(undefined, undefined, [
-            {modulo: 6, func: async () => await persistDb(clientWeb3, db, mutex)},
-            {modulo: 2, func: async () => await checkEndRound(db, mutex, {client: clientDiscord})},
-            {modulo: 2, func: async () => await checkEndProposal(db, mutex, {client: clientDiscord})},
-        ])
+    process.on('exit', async () => {
+        logger.info('exit signal received.');
+        await onPushDB();
+    })
+
+    process.on('SIGTERM', async () => {
+        logger.info('SIGTERM signal received.');
+        await onPushDB();
+    })
+
+    // catches ctrl+c event
+    process.on('SIGINT', async () => {
+        logger.info('SIGINT signal received.');
+        await onPushDB();
+    })
+
+    // catches "kill pid" (for example: nodemon restart)
+    process.on('SIGUSR1', async () => {
+        logger.info('SIGUSR1 signal received.');
+        await onPushDB();
+    })
+    process.on('SIGUSR2', async () => {
+        logger.info('SIGUSR2 signal received.');
+        await onPushDB();
+    })
+
+    const onPushDB = async () => {
+        await persistDb(clientWeb3, db, mutex)
+    }
 })()

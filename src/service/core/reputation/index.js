@@ -4,7 +4,7 @@ import Moment from 'moment'
 import logger from '../winston/index.js'
 import {quadraticFunding} from '../../discord/reputation/index.js'
 import {makeCore} from '../data/index.js'
-import {addRemoveReputationRole} from '../../discord/reputation/reputationRole/index.js'
+import {updateReputationRole} from '../../discord/reputation/reputationRole/index.js'
 import {makeRound, makeRoundConfigFromGuildConfig} from '../index.js'
 
 /**
@@ -305,7 +305,7 @@ export const checkEndRound = async (db, mutex, discord) => {
 
                 if (discord){
                     logger.debug('Check Reputation Role...')
-                    await addRemoveReputationRole(true, db?.data[guildUuid]?.users, db?.data[guildUuid]?.reputationRoles, db?.data[guildUuid]?.guildDiscordId, discord)
+                    await updateReputationRole(db?.data[guildUuid]?.users, db?.data[guildUuid]?.reputationRoles, db?.data[guildUuid]?.guildDiscordId, discord)
                     logger.debug('Check Reputation Role done.')
                 }
 

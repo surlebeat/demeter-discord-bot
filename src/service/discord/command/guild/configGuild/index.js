@@ -7,7 +7,10 @@ import {
     setDuration, setMaxReputationDecay,
     setMinReputationDecay
 } from '../../../../core/guild/index.js'
-import {addRemoveReputationRole} from '../../../reputation/reputationRole/index.js'
+import {
+  removeReputationRoleFromAll,
+  updateReputationRole
+} from '../../../reputation/reputationRole/index.js'
 import {COMMANDS_NAME} from '../../index.js'
 import {makeGuild} from '../../../../core/index.js'
 import {makeDiscord} from '../../../data/index.js'
@@ -219,11 +222,16 @@ export const setReputationRole = async (role, min, guildUuid, client, db, mutex)
     guildUuid,
     async () => role,
     async (guildDb) => {
-        if (typeof min === 'number')
-            guildDb.reputationRoles[role] = min
-        else
-            delete guildDb.reputationRoles[role]
-        await addRemoveReputationRole(typeof min === 'number', guildDb.users, guildDb.reputationRoles, db.data[guildUuid]?.guildDiscordId, {client})
+        if (typeof min === 'number') {
+          guildDb.reputationRoles[role] = min
+          const reputationRoles = {}
+          reputationRoles[role] = min
+          await updateReputationRole(db?.data[guildUuid]?.users, reputationRoles, db?.data[guildUuid]?.guildDiscordId, {client})
+        }
+        else {
+          delete guildDb.reputationRoles[role]
+          await removeReputationRoleFromAll(guildDb.users, role, db.data[guildUuid]?.guildDiscordId, {client})
+        }
         return guildDb
     }, db, mutex)
 

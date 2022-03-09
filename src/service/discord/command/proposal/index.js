@@ -92,22 +92,22 @@ const startProposal = async (interaction, guildUuid, db, mutex) => {
 
             startContent += '\n\nDo you want to start a vote for the following proposal?'
 
-            // const startMessage = await channel
-            //     ?.send(startContent)
-            //     ?.catch(() => null)
-            // if (!startMessage) {
-            //     await interaction
-            //         ?.reply({content: 'Something went wrong...', ephemeral: true})
-            //         ?.catch(() => logger.error('Reply interaction failed.'))
-            //     return true
-            // }
-            //
-            // await startMessage
-            //     ?.react('✅')
-            //     ?.catch(() => logger.error('Failed to react start proposal.'))
-            // await startMessage
-            //     ?.react('❌')
-            //     ?.catch(() => logger.error('Failed to react start proposal.'))
+            const startMessage = await channel
+                ?.send(startContent)
+                ?.catch(() => null)
+            if (!startMessage) {
+                await interaction
+                    ?.reply({content: 'Something went wrong...', ephemeral: true})
+                    ?.catch(() => logger.error('Reply interaction failed.'))
+                return true
+            }
+
+            await startMessage
+                ?.react('✅')
+                ?.catch(() => logger.error('Failed to react start proposal.'))
+            await startMessage
+                ?.react('❌')
+                ?.catch(() => logger.error('Failed to react start proposal.'))
             logger.debug('Post start message done.')
 
             logger.debug('Retrieve or create sender...')
@@ -141,7 +141,7 @@ const startProposal = async (interaction, guildUuid, db, mutex) => {
                 '',
                 Object.keys(sender)[0],
                 duration,
-                '949943136120111155',
+              startMessage.id,
             )
             if (mintUser && mintAmount)
                 proposal.actions.push({

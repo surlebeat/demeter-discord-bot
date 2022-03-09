@@ -102,9 +102,9 @@ The switch "received/sent" allows to see the reputation received or given during
 ## Captcha
 
 The bot provides a captcha without DM to reduce the risk of scams impersonating the bot.  
-You can type `/button captcha` to display the button that will offer the user to solve the Captcha.  
-The user will then have to find 3 times successively the emoji hidden in the image, he will be granted the captcha-role(`/guild config captcha-role:@🥚Humain.e`).  
-![Captcha](captcha.png?raw=true "Captcha")
+You can type `/button captcha` to display the button that will offer the user to solve the Captcha.
+The user will then have to find N (`/guild config captcha-steps:2`) times successively the emoji hidden in the image, he will be granted the captcha-role(`/guild config captcha-role:@🥚Humain.e`).
+![Captcha](captcha.png?raw=true "Captcha") 
 
 ## Role based on reputation
 
@@ -155,6 +155,9 @@ If no role is defined only Discord administrator this permission
 
 `/guild config captcha-role:@🥚Humain.e`  
 This role is added when the user has passed the captcha verification.
+
+`/guild config captcha-steps:2`
+Defines the number of captcha required steps. New users will have to defeat the challenge 2 times in a row.
 
 `/guild config default-reputation:1`  
 Each new user will receive 1 reputation and can't go bellow this amount.  

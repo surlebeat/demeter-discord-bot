@@ -47,31 +47,33 @@ import logger from './service/core/winston/index.js';
 
     process.on('exit', async () => {
         logger.info('exit signal received.');
-        await onPushDB();
+        await onExit();
     })
 
     process.on('SIGTERM', async () => {
         logger.info('SIGTERM signal received.');
-        await onPushDB();
+        await onExit();
     })
 
     // catches ctrl+c event
     process.on('SIGINT', async () => {
         logger.info('SIGINT signal received.');
-        await onPushDB();
+        await onExit();
     })
 
     // catches "kill pid" (for example: nodemon restart)
     process.on('SIGUSR1', async () => {
         logger.info('SIGUSR1 signal received.');
-        await onPushDB();
+        await onExit();
     })
     process.on('SIGUSR2', async () => {
         logger.info('SIGUSR2 signal received.');
-        await onPushDB();
+        await onExit();
     })
 
-    const onPushDB = async () => {
+    const onExit = async () => {
+        clientDiscord.destroy()
         await persistDb(clientWeb3, db, mutex)
+        process.exit(0)
     }
 })()

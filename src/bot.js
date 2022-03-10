@@ -10,8 +10,20 @@ import {checkEndRound} from './service/core/reputation/index.js'
 import {processReaction} from './service/discord/reaction/index.js'
 import {checkEndProposal} from './service/discord/proposal/index.js'
 import logger from './service/core/winston/index.js';
+import dotenv from 'dotenv'
 
 (async () => {
+    dotenv.config()
+
+    if(!process.env.DISCORD_TOKEN){
+        console.error('No DISCORD_TOKEN environment variable set ; Standard ways is to write it in a .env file')
+        return
+    }
+    if(!process.env.WEB3_TOKEN){
+        console.error('No WEB3_TOKEN environment variable set ; Standard ways is to write it in a .env file')
+        return
+    }
+
     process.env.SALT = {}
     // Mutex will be used to prevent concurrent modification on aleph,
     // it's slow inefficient BUT good enough for this use-case

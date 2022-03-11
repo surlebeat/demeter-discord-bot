@@ -20,7 +20,6 @@
   "dependencies": {
     "async-mutex": "^0.3.2",
     "discord.js": "^13.3.1",
-    "dotenv": "^16.0.0",
     "heartbeats": "^5.0.1",
     "jimp": "^0.16.1",
     "lodash.clonedeep": "^4.5.0",
@@ -31,7 +30,8 @@
     "twemoji": "^13.1.0",
     "uuid": "^8.3.2",
     "web3.storage": "^3.5.1",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "dotenv": "^16.0.0"
   },
   "devDependencies": {
     "jest": "^27.4.3"

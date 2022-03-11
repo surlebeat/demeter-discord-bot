@@ -36,6 +36,31 @@ And that's it! All that's left to do is `yarn install` and `yarn run bot`
 
 [Click here](https://discord.com/api/oauth2/authorize?client_id=911985596950540338&permissions=8&scope=bot%20applications.commands)
 
+### Access token needed
+
+Create a .env file at the same level as `package.json`, containing the two keys from Discord and Web3Storage :
+
+```shell
+DISCORD_TOKEN=OTQy....
+WEB3_TOKEN=eyJhb...J9.eyJ..J9.4sq...EiNc
+```
+
+
+### Database initialization
+
+First launch the script `npm run init`. It will create a file `initiated.json` on IPFS with a value `true`. This also
+ensure that your IPFS is properly set.
+
+![](./images/doc/ipfs.png)
+
+
+### Launch the bot
+
+You launch the bot with `npm run start`
+
+You can check the database url in your discord with typing `/guild db-url` on the Discord chat
+
+
 ### First round
 
 When you just added the bot to the server, no round starts, which means that nothing is running.  

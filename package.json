@@ -11,6 +11,7 @@
     "node": ">=16.0.0"
   },
   "scripts": {
+    "init": "node src/init.js",
     "start": "node src/bot.js",
     "bot": "node src/bot.js"
   },

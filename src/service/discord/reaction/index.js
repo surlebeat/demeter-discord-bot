@@ -3,6 +3,7 @@ import {processReactionRole} from './reactionRole/index.js'
 import {processReactionTransfer} from './reactionTransfer/index.js'
 import {processReactionGrant} from './reactionGrant/index.js'
 import {processProposal} from './reactionProposal/index.js'
+import {checkIgnored} from '../message/ignore/index.js';
 
 /**
  *
@@ -25,6 +26,9 @@ export const processReaction = async (messageReaction, user, isRemove, db, mutex
         const guildUuid = Object.keys(db?.data)
             ?.find(uuid => db?.data[uuid]?.guildDiscordId === messageReaction?.message?.guild?.id)
         if (!guildUuid) return true
+
+        if(await checkIgnored(messageReaction.message, guildUuid, db, mutex)) return true
+
         await processReactionGrant(messageReaction, user, isRemove, guildUuid, db, mutex)
         await processReactionRole(messageReaction, user, isRemove, guildUuid, db, mutex)
         await processReactionTransfer(messageReaction, user, isRemove, guildUuid, db, mutex)

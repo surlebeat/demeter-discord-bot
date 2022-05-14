@@ -360,6 +360,22 @@ export const setBlacklist = async (userDiscordId, enable, guildUuid, db, mutex) 
     }, db, mutex)
 
 /**
+ * Update how much reputation is required to ignore a message
+ * @param reputation - How much reputation
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setMinReputationIgnore = async (reputation, guildUuid, db, mutex) => basicSetter(
+  guildUuid,
+  async () => typeof reputation === 'number',
+  async (guildDb) => {
+    guildDb.config.minReputationIgnore = reputation
+    return guildDb
+  }, db, mutex)
+
+/**
  * Initialize the guild
  * @param guildDiscordId - Guild discord id
  * @param db - in-memory database
@@ -540,6 +556,11 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
         if (blacklistUser)
             if(!await setBlacklist(blacklistUser, blacklistEnable, guildUuid, db, mutex))
                 response += 'Please provide a user to add/remove from blacklist'
+
+        const minReputationIgnore = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_IGNORE.name)?.value
+        if (minReputationIgnore)
+          if(!await setMinReputationIgnore(minReputationIgnore, guildUuid, db, mutex))
+            response += 'The minimum reputation to ignore a message should be a number(0 = ignore functionality disabled)'
 
         await interaction
             ?.reply({content: response || 'Done !', ephemeral: true})

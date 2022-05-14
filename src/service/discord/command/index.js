@@ -65,6 +65,8 @@ export const COMMANDS_NAME = {
 
             BLACKLIST_USER: {name: 'blacklist-user'},
             BLACKLIST_USER_ENABLE: {name: 'blacklist-user-enable'},
+
+            MIN_REPUTATION_IGNORE: {name: 'min-reputation-ignore'},
         },
         DB_URL: { name: 'db-url'}
     },
@@ -328,18 +330,22 @@ export const COMMANDS = [
                         type: ApplicationCommandOptionTypes.CHANNEL,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.CHANNEL_PROPOSAL.name,
                         description: 'Where to post the proposal',
-                    },{
+                    }, {
                         type: ApplicationCommandOptionTypes.NUMBER,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_MUTE.name,
                         description: 'How much reputation to mute someone(0 = no mute)',
-                    },{
+                    }, {
                         type: ApplicationCommandOptionTypes.USER,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.BLACKLIST_USER.name,
                         description: 'A user who will never be included in the system.',
-                    },{
+                    }, {
                         type: ApplicationCommandOptionTypes.BOOLEAN,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.BLACKLIST_USER_ENABLE.name,
                         description: 'Add/remove this user from blacklist',
+                    }, {
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_IGNORE.name,
+                        description: 'Minimum reputation to ignore a message(0 = ignore functionality disabled)',
                     },
                 ]
             },

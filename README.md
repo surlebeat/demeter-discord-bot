@@ -15,6 +15,7 @@ This text is partially generated via an online translator, as I never had any En
  - Reward directly or via proposal your most active members
  - Giveaway weighted by reputation or not
  - Mute a member via vote
+ - Help Proof of Humanity candidates to find a voucher
  - Everything is saved on IPFS
  - Everything is customizable via a command on the Discord
 
@@ -145,6 +146,13 @@ Then anyone can start a vote to mute for x minutes via the following command `/p
 You can run a reputation-weighted giveaway with the following command `/giveaway message:https://discord.com/channels/745336259194650788/834432995972349973/925382608970465341 weighted:True`  
 A member who reacted to this message will be selected.
 
+## Proof of Humanity (PoH)
+
+Members can register themselves in a list in order to find a voucher.
+Everyone can print the list of candidates and vouch one of them.
+The candidates can thank their vouchers afterwards rewarding them with a preconfigured amount of reputation.
+If the command /guild config-2 poh-vouchers-reward has not been run or if poh-vouchers-reward < 0 then PoH functionality is disabled.
+
 ## Commands
 
 ## Guild
@@ -223,6 +231,9 @@ Print the database URL for this guild
 
 `/guild config-2 blacklist-user:@Jean blacklist-enable:True`  
 Add or remove someone from the blacklist, user in blacklist will never be added to the system(eg: useful for bot).
+
+`/guild config-2 poh-vouchers-reward:20`  
+The amount of reputation a voucher will be rewarded if the candidate he vouched thanks him. (not configured or < 0 => PoH functionality disabled)
 
 ### Round
 
@@ -326,3 +337,23 @@ Start a proposal to mint reputation to a user (Please read the Proposal section)
 
 `/proposal mute user:@Charles duration:5`  
 Start a vote to mute someone(Please read the mute section) 
+
+### Proof of Humanity (PoH)
+
+`/register profile-url:https://app.proofofhumanity.id/profile/0x...`  
+Register yourself
+
+`/unregister`  
+Unregister yourself
+
+`/list`  
+Print the list of candidates
+
+`/list-vouched`  
+Print the list of already vouched candidates
+
+`/vouch user:@Nolan`  
+Vouch a user. Be aware, if the user you just vouched does not thank you within the 24h, he will be considered as "waiting for a vouch" again.
+
+`/thank-voucher`  
+Unregister yourself from the list of candidates and thank your voucher by rewarding him with a preconfigured amount of reputation.

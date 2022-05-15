@@ -10,6 +10,7 @@ import {processRound} from './round/index.js'
 import {processProposal} from './proposal/index.js'
 import {processUser} from './user/index.js'
 import {processGiveaway} from "./giveaway/index.js";
+import {processProofOfHumanity} from './proofOfHumanity/index.js';
 
 export const COMMANDS_NAME = {
     GUILD: {
@@ -65,6 +66,8 @@ export const COMMANDS_NAME = {
 
             BLACKLIST_USER: {name: 'blacklist-user'},
             BLACKLIST_USER_ENABLE: {name: 'blacklist-user-enable'},
+
+            POH_VOUCHERS_REWARD: {name: 'poh-vouchers-reward'}
         },
         DB_URL: { name: 'db-url'}
     },
@@ -197,6 +200,36 @@ export const COMMANDS_NAME = {
 
         MESSAGE: { name: 'message'},
         WEIGHTED: { name: 'weighted'},
+    },
+    POH: {
+        name: 'poh',
+
+        REGISTER: {
+            name: 'register',
+
+            PROFILE_URL: {
+                name: 'profile-url'
+            }
+        },
+        UNREGISTER: {
+            name: 'unregister'
+        },
+        LIST: {
+            name: 'list'
+        },
+        LIST_VOUCHED: {
+            name: 'list-vouched'
+        },
+        VOUCH: {
+            name: 'vouch',
+
+            USER: {
+                name: 'user'
+            }
+        },
+        THANK_VOUCHER: {
+            name: 'thank-voucher'
+        }
     }
 }
 
@@ -340,7 +373,11 @@ export const COMMANDS = [
                         type: ApplicationCommandOptionTypes.BOOLEAN,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.BLACKLIST_USER_ENABLE.name,
                         description: 'Add/remove this user from blacklist',
-                    },
+                    },{
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG_2.POH_VOUCHERS_REWARD.name,
+                        description: 'The amount of reputation rewarded to the voucher',
+                    }
                 ]
             },
             {
@@ -636,6 +673,54 @@ export const COMMANDS = [
                 required: true
             },
         ]
+    },
+    {
+        name: COMMANDS_NAME.POH.name, description: 'Proof of Humanity', options: [
+            {
+                type: ApplicationCommandOptionTypes.SUB_COMMAND,
+                name: COMMANDS_NAME.POH.REGISTER.name,
+                description: 'Register in the list of candidates',
+                options: [
+                    {
+                        type: ApplicationCommandOptionTypes.STRING,
+                        name: COMMANDS_NAME.POH.REGISTER.PROFILE_URL.name,
+                        description: 'The url of your PoH profile (https://app.proofofhumanity.id/profile/0x...)'
+                    },
+                ]
+            },
+            {
+                type: ApplicationCommandOptionTypes.SUB_COMMAND,
+                name: COMMANDS_NAME.POH.UNREGISTER.name,
+                description: 'Unregister from the list of candidates'
+            },
+            {
+                type: ApplicationCommandOptionTypes.SUB_COMMAND,
+                name: COMMANDS_NAME.POH.LIST.name,
+                description: 'Print the list of candidates'
+            },
+            {
+                type: ApplicationCommandOptionTypes.SUB_COMMAND,
+                name: COMMANDS_NAME.POH.LIST_VOUCHED.name,
+                description: 'Print the list of already vouched candidates'
+            },
+            {
+                type: ApplicationCommandOptionTypes.SUB_COMMAND,
+                name: COMMANDS_NAME.POH.VOUCH.name,
+                description: 'Vouch a candidate',
+                options: [
+                    {
+                        type: ApplicationCommandOptionTypes.USER,
+                        name: COMMANDS_NAME.POH.VOUCH.USER.name,
+                        description: 'The candidate to vouch'
+                    },
+                ]
+            },
+            {
+                type: ApplicationCommandOptionTypes.SUB_COMMAND,
+                name: COMMANDS_NAME.POH.THANK_VOUCHER.name,
+                description: 'Thank your voucher and unregister from the list of candidates'
+            },
+        ]
     }
 ]
 
@@ -668,6 +753,7 @@ const processCommand = async (interaction, db, mutex, salt, noiseImg, clientWeb3
         if(await processPrintButton(interaction, guildUuid, db, mutex))return true
         if(await processProposal(interaction, guildUuid, db, mutex))return true
         if(await processGiveaway(interaction, guildUuid, db, mutex))return true
+        if(await processProofOfHumanity(interaction, guildUuid, db, mutex))return true
 
         if(await processButton(interaction, guildUuid, db, mutex, salt, noiseImg))return true
 

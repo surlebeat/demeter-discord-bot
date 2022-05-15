@@ -1,6 +1,7 @@
 import {MessageActionRow, MessageSelectMenu} from 'discord.js'
 import logger from '../../../core/winston/index.js'
 import Moment from "moment";
+import {isPoHEnabled} from '../../util/helper.js';
 
 export const SELECT_GUILD_INFO = {
     customId: 'select-server-info',
@@ -39,6 +40,8 @@ export const SELECT_GUILD_INFO_OPTIONS = {
     MUTED_USERS: {value: 'muted-users', label: '📵 list users muted'},
 
     BLACKLIST: {value: 'blacklist', label: '🪦 blacklist'},
+
+    POH_VOUCHERS_REWARD: {value: 'poh-vouchers-reward', label: '💰 poh vouchers reward'},
 }
 
 export const guildInfoComponents = [new MessageActionRow()
@@ -596,6 +599,31 @@ const printBlacklist = async (interaction, guildDb) => {
 }
 
 /**
+ *
+ * @param interaction - Discord interaction
+ * @param guildDb - in-memory database
+ * @returns {Promise<boolean>}
+ */
+const printPohVouchersReward = async (interaction, guildDb) => {
+    try {
+        if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.POH_VOUCHERS_REWARD.value)) return false
+
+        await interaction
+          ?.reply({content: isPoHEnabled(guildDb)
+                ? `Vouchers receive ${guildDb.config.pohVouchersReward} reputations if the user they vouched rewards them.`
+                : 'Poh is disabled.', ephemeral: true})
+          ?.catch(() => logger.error('Reply interaction failed.'))
+        return true
+    } catch (e) {
+        logger.error(e)
+        await interaction
+          ?.reply({content: 'Something went wrong...', ephemeral: true})
+          ?.catch(() => logger.error('Reply interaction failed.'))
+        return true
+    }
+}
+
+/**
  * Process all print interaction
  * @param interaction - Discord interaction
  * @param guildUuid - Guild unique identifier
@@ -641,6 +669,8 @@ export const printGuildInfo = async (interaction, guildUuid, db) => {
         if (await printMutedList(interaction, guildDb)) return true
 
         if (await printBlacklist(interaction, guildDb)) return true
+
+        if (await printPohVouchersReward(interaction, guildDb)) return true
 
         return false
     } catch (e) {

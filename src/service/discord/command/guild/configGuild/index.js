@@ -360,6 +360,22 @@ export const setBlacklist = async (userDiscordId, enable, guildUuid, db, mutex) 
     }, db, mutex)
 
 /**
+ * Update the amount of reputation rewarded to vouchers
+ * @param reputation - The amount of reputation rewarded to vouchers
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setPohVouchersReward = async (reputation, guildUuid, db, mutex) => basicSetter(
+  guildUuid,
+  async () => typeof reputation === 'number',
+  async (guildDb) => {
+    guildDb.config.pohVouchersReward = reputation
+    return guildDb
+  }, db, mutex)
+
+/**
  * Initialize the guild
  * @param guildDiscordId - Guild discord id
  * @param db - in-memory database
@@ -541,9 +557,13 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
             if(!await setBlacklist(blacklistUser, blacklistEnable, guildUuid, db, mutex))
                 response += 'Please provide a user to add/remove from blacklist'
 
+        const pohVouchersReward = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.POH_VOUCHERS_REWARD.name)?.value
+        if (typeof pohVouchersReward === 'number')
+          await setPohVouchersReward(pohVouchersReward, guildUuid, db, mutex)
+
         await interaction
-            ?.reply({content: response || 'Done !', ephemeral: true})
-            ?.catch(() => logger.error('Reply interaction failed.'))
+              ?.reply({content: response || 'Done !', ephemeral: true})
+              ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
         logger.error(e)

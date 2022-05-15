@@ -90,20 +90,26 @@ export const makeRound = (
  * @param creationDate
  * @param rounds
  * @param users
+ * @param pohCandidates
+ * @param pohVouchedCandidates
  * @param config
- * @returns {{discordMutedUsers: {}, reactionTransfers: {}, discordProposals: {}, reputationRoles: {}, guildDiscordId: *, creationDate: string, config: {reputationDecay: number, replyGrant: number, minReputationTransfer: number, minReputationToMute: number, channelGrantMultipliers: {default: number}, adminRole: string, minReputationToConfirmProposal: number, discordMatching: number, captchaRole: string, channelProposal: string, roundDuration: number, rolePowerMultipliers: {default: number}, channelPantheons: {}, minReputationToStartProposal: number, reactionGrants: {default: number}}, rounds: *[], users: {}, reactionRoles: {}}}
+ * @returns {{discordMutedUsers: {}, reactionTransfers: {}, discordProposals: {}, reputationRoles: {}, guildDiscordId: *, creationDate: string, pohCandidates: {}, pohVouchedCandidates: [], config: {reputationDecay: number, replyGrant: number, minReputationTransfer: number, minReputationToMute: number, channelGrantMultipliers: {default: number}, adminRole: string, minReputationToConfirmProposal: number, discordMatching: number, captchaRole: string, channelProposal: string, roundDuration: number, rolePowerMultipliers: {default: number}, channelPantheons: {}, minReputationToStartProposal: number, reactionGrants: {default: number}}, rounds: *[], users: {}, reactionRoles: {}}}
  */
 export const makeGuild = (
     discord=makeDiscord.makeGuild(),
     creationDate=Moment().toISOString(),
     rounds=[],
     users = {},
+    pohCandidates = {},
+    pohVouchedCandidates = [],
     config=makeConfigGuild()
 ) => ({
     ...discord,
     creationDate,
     rounds,
     users,
+    pohCandidates,
+    pohVouchedCandidates,
     config
 })
 

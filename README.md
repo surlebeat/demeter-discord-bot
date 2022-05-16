@@ -232,7 +232,7 @@ Print the database URL for this guild
 `/guild config-2 blacklist-user:@Jean blacklist-enable:True`  
 Add or remove someone from the blacklist, user in blacklist will never be added to the system(eg: useful for bot).
 
-`/guild config-2 poh-vouchers-reward:20`  
+`/guild config-2 poh-vouchers-reward:10`  
 The amount of reputation a voucher will be rewarded if the candidate he vouched thanks him. (not configured or < 0 => PoH functionality disabled)
 
 ### Round

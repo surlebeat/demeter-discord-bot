@@ -20,7 +20,7 @@ export const checkPoHVouches = async (db, mutex) => {
         const candidates = db?.data[guildUuid]?.pohCandidates
 
         if (!candidates || !Object.keys(candidates).length) {
-          logger.debug(`Guild ${guildUuid} doesn't have any candidate!`)
+          logger.error(`Guild ${guildUuid} doesn't have any candidate!`)
           continue
         }
 

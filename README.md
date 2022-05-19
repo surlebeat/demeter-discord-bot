@@ -145,6 +145,13 @@ Then anyone can start a vote to mute for x minutes via the following command `/p
 You can run a reputation-weighted giveaway with the following command `/giveaway message:https://discord.com/channels/745336259194650788/834432995972349973/925382608970465341 weighted:True`  
 A member who reacted to this message will be selected.
 
+## Flag a message as ignored
+
+Sometimes, you don't want a message to be processed by Demeter and earn reputation. Eg: when tagging _@everyone_ for information sharing.  
+If the owner of a message reacts to his own message with the emoji 🙈 or If the community reacts to a message with the same emoji and the sum of everyone's reputation is greater than MIN_REPUTATION_IGNORE then the message is not taken into account when calculating the reputation by Demeter.  
+Set the MIN_REPUTATION_IGNORE parameter via the `/guild config-2 MIN_REPUTATION_IGNORE 300`  
+If this parameter is not configured or if its value is 0, then the functionality is disabled.
+
 ## Commands
 
 ## Guild
@@ -211,12 +218,12 @@ Transfer a message if more than X reputation use this emoji
 ![hs_bar](hs_bar.png?raw=true "hs_bar")
 
 `/guild config-2 min-rep-start-proposal:500 min-rep-confirm-proposal:2000 channel-proposal:#📜-proposition`  
-To propose a vote, you need to gather 500 reputations(0=disabled).  
+To propose a vote, you need to gather 500 reputations (0=disabled).  
 Once having collected the minimum reputation required, the proposals will be proposed to the vote in this channel.  
 For a proposal to be considered valid, 2000 reputations must be collected(0=disabled). 
 
 `/guild config-2 min-rep-mute:100`  
-To mute someone, you need to gather 100 reputations.(0=disabled)
+To mute someone, you need to gather 100 reputations (0=disabled).
 
 `/guild db-url`  
 Print the database URL for this guild
@@ -224,10 +231,13 @@ Print the database URL for this guild
 `/guild config-2 blacklist-user:@Jean blacklist-enable:True`  
 Add or remove someone from the blacklist, user in blacklist will never be added to the system(eg: useful for bot).
 
+`/guild config-2 MIN_REPUTATION_IGNORE 300`  
+To flag a message as ignored, you need to gather 300 reputations (0=disabled).
+
 ### Round
 
 `/round config round-shift:1 apply-guild-default:True`  
-Apply the current default guild config to 1 round in the past(by default = 0, 0=now)
+Apply the current default guild config to 1 round in the past(by default=0, 0=now)
 
 `/round config round-shift:0 default-reputation:1`  
 Each new user will receive 1 reputation and can't go bellow this amount.

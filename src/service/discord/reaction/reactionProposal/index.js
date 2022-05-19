@@ -80,7 +80,7 @@ export const startProposal = async (messageReaction, user, guildUuid, db, mutex)
 
             if (actionMint)
                 content += `\n\nThis proposal will mint ${actionMint.amount} reputations to <@!${db?.data[guildUuid]?.users[actionMint.receiverUuid]?.discordId}>`
-            content += `\n\nYou have until ${endDate?.format('dddd, MMMM Do YYYY, h:mm')} to vote.`
+            content += `\n\nYou have until ${endDate?.format('dddd, MMMM Do YYYY, h:mm a')} to vote.`
 
             await messageReaction?.message
                 ?.edit(messageReaction?.message?.content.split('\n\n').slice(0, -2).join('\n\n')

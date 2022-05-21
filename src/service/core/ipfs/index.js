@@ -89,12 +89,12 @@ export const loadDb = async (clientWeb3, db, mutex, lastUploadIsCorrupted) => {
         return db
     } catch (e) {
         logger.error(e)
-        console.log(e)
-        // if(e.includes('Unexpected end of data')) {
-        //     await loadDb(clientWeb3, db, mutex, true)
-        // }
-        await new Promise((resolve) => setTimeout(resolve, 5000))
-        await loadDb(clientWeb3, db, mutex)
+        if(e.message?.includes('Unexpected end of data')) {
+            await loadDb(clientWeb3, db, mutex, true)
+        } else {
+            await new Promise((resolve) => setTimeout(resolve, 5000))
+            await loadDb(clientWeb3, db, mutex, false)
+        }
         return null
     }
 }

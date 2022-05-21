@@ -26,7 +26,7 @@ import {checkPoHVouches} from './service/core/proofOfHumanity/index.js';
     const noiseOriginal = await Jimp.read('./images/noise.png') // Noise image for captcha
 
     // Load last saved Database
-    await loadDb(clientWeb3, db, mutex)
+    await loadDb(clientWeb3, db, mutex, false)
 
     // Discord.js client
     const clientDiscord = await createClient(

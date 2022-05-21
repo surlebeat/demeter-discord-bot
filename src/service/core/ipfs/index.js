@@ -24,8 +24,6 @@ export const persistDb = async (clientWeb3, db, mutex) => {
         logger.debug('Create files with all guild done.')
 
         logger.debug('Upload new backup to IPFS...')
-        logger.debug('files : ');
-        logger.debug(files);
         const cid = await clientWeb3
             ?.put(files)
             ?.catch((e) => logger.error(e));
@@ -44,17 +42,22 @@ export const persistDb = async (clientWeb3, db, mutex) => {
  * @param clientWeb3 - Web3.storage client
  * @param db - LowDB in-memory database
  * @param mutex - Mutex to prevent concurrent modification
+ * @param lastUploadIsCorrupted - True if the last upload is corrupted (e.g.: due to Heroku cycling events)
  * @returns {Promise<null|Low>}
  */
-export const loadDb = async (clientWeb3, db, mutex) => {
+export const loadDb = async (clientWeb3, db, mutex, lastUploadIsCorrupted) => {
     try {
         await mutex.runExclusive(async () => {
             logger.debug('Fetch last directory...')
             let lastUpload = null
+            let penultimateUpload = null
             try {
                 for await (const upload of clientWeb3?.list()) {
                     if (!lastUpload)lastUpload = upload
-                    if(moment(upload?.created)?.isAfter(moment(lastUpload?.created)))lastUpload = upload
+                    if(moment(upload?.created)?.isAfter(moment(lastUpload?.created))) {
+                        penultimateUpload = lastUpload
+                        lastUpload = upload
+                    }
                 }
             }   catch (e) {
                 logger.debug('Fetch last directory failed :', e)
@@ -63,8 +66,10 @@ export const loadDb = async (clientWeb3, db, mutex) => {
             logger.debug('Fetch last directory done.')
 
             logger.debug('Fetch all guild files...')
-            console.log(lastUpload?.cid)
-            let res = await clientWeb3?.get(lastUpload?.cid)?.catch((e) => {
+            if(lastUploadIsCorrupted) {
+                logger.warn(`Last upload ${lastUpload?.cid} is corrupted. We will then use penultimate upload ${penultimateUpload?.cid} !`)
+            }
+            let res = await clientWeb3?.get(lastUploadIsCorrupted ? penultimateUpload?.cid : lastUpload?.cid)?.catch((e) => {
                 logger.error(e);
                 return {ok: false};
             });
@@ -84,6 +89,9 @@ export const loadDb = async (clientWeb3, db, mutex) => {
         return db
     } catch (e) {
         logger.error(e)
+        if(e.includes('Unexpected end of data')) {
+            await loadDb(clientWeb3, db, mutex, true)
+        }
         await new Promise((resolve) => setTimeout(resolve, 5000))
         await loadDb(clientWeb3, db, mutex)
         return null

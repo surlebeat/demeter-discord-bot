@@ -12,10 +12,10 @@ export const SELECT_GUILD_INFO_OPTIONS = {
     CAPTCHA_ROLE: {value: 'captcha-role', label: '🤖 captcha role'},
     CAPTCHA_STEPS: {value: 'captcha-steps', label: '🎚️ captcha steps'},
 
-    DEFAULT_REPUTATION: {value: 'default-reputation', label: '🐣 Default reputation'},
-    ROUND_DURATION: {value: 'round-duration', label: '⏱ Round duration'},
-    MIN_REPUTATION_DECAY: {value: 'min-reputation-decay', label: '📉 Min reputation decay'},
-    MAX_REPUTATION_DECAY: {value: 'max-reputation-decay', label: '⚖ Max reputation decay'},
+    DEFAULT_REPUTATION: {value: 'default-reputation', label: '🐣 default reputation'},
+    ROUND_DURATION: {value: 'round-duration', label: '⏱ round duration'},
+    MIN_REPUTATION_DECAY: {value: 'min-reputation-decay', label: '📉 min reputation decay'},
+    MAX_REPUTATION_DECAY: {value: 'max-reputation-decay', label: '⚖ max reputation decay'},
     DISCORD_MATCHING: {value: 'discord-matching', label: '🎁 discord matching'},
     ROLE_POWER_MULTIPLIERS: {value: 'role-power-multipliers', label: '🧙 role power multipliers'},
 
@@ -25,8 +25,8 @@ export const SELECT_GUILD_INFO_OPTIONS = {
     PROPOSAL_CHANNEL: {value: 'proposal-channel', label: '📢 proposal channel'},
     CHANNEL_PANTHEONS: {value: 'channel-pantheons', label: '👑 channel pantheons'},
 
-    REPLY_GRANT: {value: 'reply-grant', label: '💬 Reply grant'},
-    REACTION_GRANTS: {value: 'reaction-grants', label: '❤ Reaction grants'},
+    REPLY_GRANT: {value: 'reply-grant', label: '💬 reply grant'},
+    REACTION_GRANTS: {value: 'reaction-grants', label: '❤ reaction grants'},
     CHANNEL_GRANT_MULTIPLIERS: {value: 'channel-grant-multiplier', label: '🗺 channel grant multipliers'},
 
     MIN_REPUTATION_MUTE: {value: 'min-reputation-mute', label: '🤫 min reputation to mute'},
@@ -42,6 +42,8 @@ export const SELECT_GUILD_INFO_OPTIONS = {
     BLACKLIST: {value: 'blacklist', label: '🪦 blacklist'},
 
     POH_VOUCHERS_REWARD: {value: 'poh-vouchers-reward', label: '💰 poh vouchers reward'},
+
+    MIN_REPUTATION_IGNORE: {value: 'min-reputation-ignore', label: '🙈 min reputation to flag a message as ignored'},
 }
 
 export const guildInfoComponents = [new MessageActionRow()
@@ -624,6 +626,31 @@ const printPohVouchersReward = async (interaction, guildDb) => {
 }
 
 /**
+ *
+ * @param interaction - Discord interaction
+ * @param guildDb - in-memory database
+ * @returns {Promise<boolean>}
+ */
+const printMinReputationIgnore = async (interaction, guildDb) => {
+    try {
+        if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MIN_REPUTATION_IGNORE.value)) return false
+
+        await interaction
+          ?.reply({content: guildDb.config.minReputationIgnore
+                ? `To flag a message as ignored by Demeter, you need to gather ${guildDb.config.minReputationIgnore} reputations.`
+                : 'Ignore message is disabled.', ephemeral: true})
+          ?.catch(() => logger.error('Reply interaction failed.'))
+        return true
+    } catch (e) {
+        logger.error(e)
+        await interaction
+          ?.reply({content: 'Something went wrong...', ephemeral: true})
+          ?.catch(() => logger.error('Reply interaction failed.'))
+        return true
+    }
+}
+
+/**
  * Process all print interaction
  * @param interaction - Discord interaction
  * @param guildUuid - Guild unique identifier
@@ -671,6 +698,8 @@ export const printGuildInfo = async (interaction, guildUuid, db) => {
         if (await printBlacklist(interaction, guildDb)) return true
 
         if (await printPohVouchersReward(interaction, guildDb)) return true
+
+        if (await printMinReputationIgnore(interaction, guildDb)) return true
 
         return false
     } catch (e) {

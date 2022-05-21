@@ -153,6 +153,13 @@ Everyone can print the list of candidates and vouch one of them.
 The candidates can thank their vouchers afterwards rewarding them with a preconfigured amount of reputation.
 If the command /guild config-2 poh-vouchers-reward has not been run or if poh-vouchers-reward < 0 then PoH functionality is disabled.
 
+## Flag a message as ignored
+
+Sometimes, you don't want a message to be processed by Demeter and earn reputation. Eg: when tagging _@everyone_ for information sharing.  
+If the owner of a message reacts to his own message with the emoji 🙈 or If the community reacts to a message with the same emoji and the sum of everyone's reputation is greater than MIN_REPUTATION_IGNORE then the message is not taken into account when calculating the reputation by Demeter.  
+Set the MIN_REPUTATION_IGNORE parameter via the `/guild config-2 MIN_REPUTATION_IGNORE 300`  
+If this parameter is not configured or if its value is 0, then the functionality is disabled.
+
 ## Commands
 
 ## Guild
@@ -219,12 +226,12 @@ Transfer a message if more than X reputation use this emoji
 ![hs_bar](hs_bar.png?raw=true "hs_bar")
 
 `/guild config-2 min-rep-start-proposal:500 min-rep-confirm-proposal:2000 channel-proposal:#📜-proposition`  
-To propose a vote, you need to gather 500 reputations(0=disabled).  
+To propose a vote, you need to gather 500 reputations (0=disabled).  
 Once having collected the minimum reputation required, the proposals will be proposed to the vote in this channel.  
 For a proposal to be considered valid, 2000 reputations must be collected(0=disabled). 
 
 `/guild config-2 min-rep-mute:100`  
-To mute someone, you need to gather 100 reputations.(0=disabled)
+To mute someone, you need to gather 100 reputations (0=disabled).
 
 `/guild db-url`  
 Print the database URL for this guild
@@ -235,10 +242,13 @@ Add or remove someone from the blacklist, user in blacklist will never be added 
 `/guild config-2 poh-vouchers-reward:10`  
 The amount of reputation a voucher will be rewarded if the candidate he vouched thanks him. (not configured or < 0 => PoH functionality disabled)
 
+`/guild config-2 MIN_REPUTATION_IGNORE 300`  
+To flag a message as ignored, you need to gather 300 reputations (0=disabled).
+
 ### Round
 
 `/round config round-shift:1 apply-guild-default:True`  
-Apply the current default guild config to 1 round in the past(by default = 0, 0=now)
+Apply the current default guild config to 1 round in the past(by default=0, 0=now)
 
 `/round config round-shift:0 default-reputation:1`  
 Each new user will receive 1 reputation and can't go bellow this amount.

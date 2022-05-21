@@ -63,6 +63,7 @@ export const loadDb = async (clientWeb3, db, mutex) => {
             logger.debug('Fetch last directory done.')
 
             logger.debug('Fetch all guild files...')
+            console.log(lastUpload?.cid)
             let res = await clientWeb3?.get(lastUpload?.cid)?.catch((e) => {
                 logger.error(e);
                 return {ok: false};

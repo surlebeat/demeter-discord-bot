@@ -55,8 +55,17 @@ export const loadDb = async (clientWeb3, db, mutex, lastUploadIsCorrupted) => {
                 for await (const upload of clientWeb3?.list()) {
                     if (!lastUpload)lastUpload = upload
                     if(moment(upload?.created)?.isAfter(moment(lastUpload?.created))) {
-                        penultimateUpload = lastUpload
                         lastUpload = upload
+                    }
+                }
+                if(lastUploadIsCorrupted) {
+                    for await (const upload of clientWeb3?.list()) {
+                        if (!penultimateUpload && upload?.cid !== lastUpload?.cid) {
+                            penultimateUpload = upload
+                        }
+                        if(penultimateUpload && upload?.cid !== lastUpload?.cid && moment(upload?.created)?.isAfter(moment(penultimateUpload?.created))) {
+                            penultimateUpload = upload
+                        }
                     }
                 }
             }   catch (e) {

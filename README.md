@@ -115,11 +115,12 @@ You can choose to add a role based on accumulated reputation automatically.
 ## Move off-topic messages
 
 By creating custom emoji you can allow your members to move off-topic messages to the appropriate channel.  
-You must first define how many reputations are needed to move a message, for example, 200 `/guild config reaction-transfer-reputation:200`(0=disabled)  
+You must first define the minimum reputation needed to move a message, for example, 200 `/guild config-2 reaction-transfer-reputation:200`(0=disabled)  
 Then for each channel you can create a custom emoji that members will use to redirect messages, for example:  
-`/guild config reaction-transfer-reputation::hs_bar: reaction-transfer-channel:#🍹-bar` this emoji will redirect a message in the channel bar, with a custom emoji "hs_bar" like the one below.  
+`/guild config-2 reaction-transfer-reputation::hs_bar: reaction-transfer-channel:#🍹-bar` this emoji will redirect a message in the channel bar, with a custom emoji "hs_bar" like the one below.  
 ![hs_bar](hs_bar.png?raw=true "hs_bar")  
-As soon as 200 reputations have reacted with this emoji to the message, it will be transferred.  
+As soon as the minimum reputation has reacted with this emoji to the message, it will be transferred.  
+You can override the minimum reputation using the `reaction-transfer-override-repu` option.
 
 ## Reputation-weighted proposals
 

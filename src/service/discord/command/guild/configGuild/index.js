@@ -255,12 +255,13 @@ export const setReactionTransferReputation = async (reputation, guildUuid, db, m
  * Update which reaction will transfer to which channel
  * @param reaction - Reaction that will trigger the transfer
  * @param channel - Where to transfer
+ * @param reputation - Override how much reputation is required to transfer a message
  * @param guildUuid - Guild unique identifier
  * @param db - In-memory database
  * @param mutex - Mutex to access the database safely
  * @returns {Promise<boolean>}
  */
-export const setReactionTransfer = async (reaction, channel, guildUuid, db, mutex) => basicSetter(
+export const setReactionTransfer = async (reaction, channel, reputation, guildUuid, db, mutex) => basicSetter(
     guildUuid,
     async () => {
         const regex = /<:(.*):\d+>|(.)/gm
@@ -271,7 +272,7 @@ export const setReactionTransfer = async (reaction, channel, guildUuid, db, mute
         const regex = /<:(.*):\d+>|(.)/gm
         let emoji = reaction.replace(regex, '$1') || reaction.replace(regex, '$2')
         if (channel)
-            guildDb.reactionTransfers[emoji] = channel
+            guildDb.reactionTransfers[emoji] = reputation ? {channel , reputation} : channel;
         else
             delete guildDb.reactionTransfers[emoji]
         return guildDb
@@ -536,17 +537,6 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
             if(!await setReputationRole(reputationRoleRole, reputationRoleMin, guildUuid, interaction.client, db, mutex))
                 response += 'Please provide at least a role(if no min = remove)'
 
-        const reactionTransferReaction = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_REACTION.name)?.value
-        const reactionTransferChannel = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_CHANNEL.name)?.value
-        if (reactionTransferReaction)
-            if(!await setReactionTransfer(reactionTransferReaction, reactionTransferChannel, guildUuid, db, mutex))
-                response += 'Please provide at least a reaction(if no channel = remove)'
-
-        const reactionTransferReputation = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_REPUTATION.name)?.value
-        if (typeof reactionTransferReputation === 'number')
-            if(!await setReactionTransferReputation(reactionTransferReputation, guildUuid, db, mutex))
-                response += 'The minimum reputation to transfer a message should be a number(0 = no transfer)'
-
         const minReputationStartProposal = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_START_PROPOSAL.name)?.value
         if (typeof minReputationStartProposal === 'number')
             if(!await setMinReputationStartProposal(minReputationStartProposal, guildUuid, db, mutex))
@@ -581,6 +571,18 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
         if (minReputationIgnore)
           if(!await setMinReputationIgnore(minReputationIgnore, guildUuid, db, mutex))
             response += 'The minimum reputation to ignore a message should be a number(0 = ignore functionality disabled)'
+
+        const reactionTransferReaction = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_REACTION.name)?.value
+        const reactionTransferChannel = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_CHANNEL.name)?.value
+        const reactionTransferOverrideReputation = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_OVERRIDE_REPUTATION.name)?.value
+        if (reactionTransferReaction)
+            if(!await setReactionTransfer(reactionTransferReaction, reactionTransferChannel, reactionTransferOverrideReputation, guildUuid, db, mutex))
+                response += 'Please provide at least a reaction(if no channel = remove)'
+
+        const reactionTransferReputation = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_REPUTATION.name)?.value
+        if (typeof reactionTransferReputation === 'number')
+            if(!await setReactionTransferReputation(reactionTransferReputation, guildUuid, db, mutex))
+                response += 'The minimum reputation to transfer a message should be a number(0 = no transfer)'
 
         await interaction
               ?.reply({content: response || 'Done !', ephemeral: true})

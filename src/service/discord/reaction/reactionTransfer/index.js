@@ -27,15 +27,20 @@ export const transferMessage = async (messageReaction, user, isRemove, guildUuid
         logger.debug('Fetch all reactions done.')
 
         logger.debug('Check if enough reputation...')
-        if(db?.data[guildUuid]?.config?.minReputationTransfer > [...Object.values(db?.data[guildUuid]?.users)
+        const reactionTransferChannelConfig = db?.data[guildUuid]?.reactionTransfers[messageReaction?.emoji?.name];
+        const allCollectedReputation = [...Object.values(db?.data[guildUuid]?.users)
             .filter(u => discordIdList?.includes(u?.discordId))
             .map(u => u?.reputations[u?.reputations?.length - 1]), 0]
-            .reduce((a, n) => a + n))return true
+            .reduce((a, n) => a + n);
+        if(reactionTransferChannelConfig.reputation !== undefined && reactionTransferChannelConfig.reputation > allCollectedReputation)
+            return true
+        if(reactionTransferChannelConfig.reputation === undefined && db?.data[guildUuid]?.config?.minReputationTransfer > allCollectedReputation)
+            return true
         logger.debug('Check if enough reputation done.')
 
         logger.debug('Transfer message...')
         const channel = await messageReaction?.message?.guild?.channels
-            ?.fetch(db?.data[guildUuid]?.reactionTransfers[messageReaction?.emoji?.name])
+            ?.fetch(reactionTransferChannelConfig.channel || reactionTransferChannelConfig)
             ?.catch(() => null)
         if (!channel) return true
 

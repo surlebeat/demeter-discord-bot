@@ -536,7 +536,7 @@ const printReactionTransfers = async (interaction, guildDb) => {
 
         await interaction
             ?.reply({content: `Transfer a message if enough reputation use this emoji.\n\n${Object.keys(guildDb?.reactionTransfers)
-                    .map((reaction) => `${reaction} => <#${guildDb?.reactionTransfers[reaction]}>`).join('\n')}`, ephemeral: true})
+                    .map((reaction) => reactionTransferToString(reaction, guildDb)).join('\n')}`, ephemeral: true})
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -546,6 +546,13 @@ const printReactionTransfers = async (interaction, guildDb) => {
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     }
+}
+
+const reactionTransferToString = (reaction, guildDb) => {
+    const config = guildDb?.reactionTransfers[reaction];
+    const channel = config.channel || config;
+    const reputation = config.reputation;
+    return `${reaction} => <#${channel}>${reputation ? ` | overridden reputation : ${reputation}` : ''}`;
 }
 
 /**

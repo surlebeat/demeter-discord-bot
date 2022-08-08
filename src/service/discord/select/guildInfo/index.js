@@ -21,7 +21,10 @@ export const SELECT_GUILD_INFO_OPTIONS = {
 
     MIN_REPUTATION_TRANSFER: {value: 'min-reputation-transfer', label: '↪ min reputation transfer'},
     MIN_REPUTATION_START_PROPOSAL: {value: 'min-reputation-start-proposal', label: '📃 min reputation start proposal'},
-    MIN_REPUTATION_CONFIRM_PROPOSAL: {value: 'min-reputation-confirm-proposal', label: '🗳 min reputation confirm proposal'},
+    MIN_REPUTATION_CONFIRM_PROPOSAL: {
+        value: 'min-reputation-confirm-proposal',
+        label: '🗳 min reputation confirm proposal'
+    },
     PROPOSAL_CHANNEL: {value: 'proposal-channel', label: '📢 proposal channel'},
     CHANNEL_PANTHEONS: {value: 'channel-pantheons', label: '👑 channel pantheons'},
 
@@ -65,9 +68,11 @@ const printAdminRole = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.ADMIN_ROLE.value)) return false
 
         await interaction
-            ?.reply({content: guildDb?.config?.adminRole
+            ?.reply({
+                content: guildDb?.config?.adminRole
                     ? `Users with the <@&${guildDb?.config?.adminRole}> role can perform certain privileged actions such as changing the bot configuration or granting reputation to a member.`
-                    : 'No admin role set', ephemeral: true})
+                    : 'No admin role set', ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -90,9 +95,11 @@ const printCaptchaRole = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.CAPTCHA_ROLE.value)) return false
 
         await interaction
-            ?.reply({content: guildDb.config.captchaRole
-                    ?`<@&${guildDb.config.captchaRole}> is added when the user has passed the captcha verification.`
-                    : 'No captcha role set', ephemeral: true})
+            ?.reply({
+                content: guildDb.config.captchaRole
+                    ? `<@&${guildDb.config.captchaRole}> is added when the user has passed the captcha verification.`
+                    : 'No captcha role set', ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -115,14 +122,17 @@ const printCaptchaSteps = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.CAPTCHA_STEPS.value)) return false
 
         await interaction
-          ?.reply({content: `The verification requires ${guildDb.config.captchaSteps} captcha step(s).`, ephemeral: true})
-          ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.reply({
+                content: `The verification requires ${guildDb.config.captchaSteps} captcha step(s).`,
+                ephemeral: true
+            })
+            ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
         logger.error(e)
         await interaction
-          ?.reply({content: 'Something went wrong...', ephemeral: true})
-          ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.reply({content: 'Something went wrong...', ephemeral: true})
+            ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     }
 }
@@ -138,7 +148,10 @@ const printDefaultReputation = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.DEFAULT_REPUTATION.value)) return false
 
         await interaction
-            ?.reply({content: `Each new user will receive ${guildDb.config.defaultReputation} reputations and can't go bellow this amount.`, ephemeral: true})
+            ?.reply({
+                content: `Each new user will receive ${guildDb.config.defaultReputation} reputations and can't go bellow this amount.`,
+                ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -161,7 +174,10 @@ const printRoundDuration = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.ROUND_DURATION.value)) return false
 
         await interaction
-            ?.reply({content: `Each round has a duration of ${guildDb.config.roundDuration} days, reputation is distributed at the end of each round.`, ephemeral: true})
+            ?.reply({
+                content: `Each round has a duration of ${guildDb.config.roundDuration} days, reputation is distributed at the end of each round.`,
+                ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -184,8 +200,10 @@ const printMinReputationDecay = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MIN_REPUTATION_DECAY.value)) return false
 
         await interaction
-            ?.reply({content: `At the end of each round, all members will  grant ${guildDb.config.minReputationDecay * 100}% of their total reputation.\n`+
-                `If you grant less during a round, we will burn the difference.`, ephemeral: true})
+            ?.reply({
+                content: `At the end of each round, all members will  grant ${guildDb.config.minReputationDecay * 100}% of their total reputation.\n` +
+                    `If you grant less during a round, we will burn the difference.`, ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -208,7 +226,10 @@ const printMaxReputationDecay = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MAX_REPUTATION_DECAY.value)) return false
 
         await interaction
-            ?.reply({content: `The further the user moves away from the standard deviation of reputation, the more reputation he will lose at the end of each round, at most ${guildDb.config.maxReputationDecay * 100}%.`, ephemeral: true})
+            ?.reply({
+                content: `The further the user moves away from the standard deviation of reputation, the more reputation he will lose at the end of each round, at most ${guildDb.config.maxReputationDecay * 100}%.`,
+                ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -231,7 +252,10 @@ const printDiscordMatching = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.DISCORD_MATCHING.value)) return false
 
         await interaction
-            ?.reply({content: `At the end of each period, we will distribute ${guildDb.config.discordMatching} reputation in addition to the total reputation burn during this round via a Quadratic Funding formula.`, ephemeral: true})
+            ?.reply({
+                content: `At the end of each period, we will distribute ${guildDb.config.discordMatching} reputation in addition to the total reputation burn during this round via a Quadratic Funding formula.`,
+                ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -254,10 +278,13 @@ const printRolePowerMultipliers = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.ROLE_POWER_MULTIPLIERS.value)) return false
 
         await interaction
-            ?.reply({content: `When we compute the reputation matching at the end of each round, we take several parameters to determine the amount of reputation granted to you.`+
-                `The diversity and amount of reputation received, the seniority of the donator but also the role of the donator.\n\n`+
-                `${Object.keys(guildDb.config.rolePowerMultipliers)
-                    .map((role) => `${role === 'default' ? role : `<@&${role}>`} => x${guildDb.config.rolePowerMultipliers[role]}`).join('\n')}`, ephemeral: true})
+            ?.reply({
+                content: `When we compute the reputation matching at the end of each round, we take several parameters to determine the amount of reputation granted to you.` +
+                    `The diversity and amount of reputation received, the seniority of the donator but also the role of the donator.\n\n` +
+                    `${Object.keys(guildDb.config.rolePowerMultipliers)
+                        .map((role) => `${role === 'default' ? role : `<@&${role}>`} => x${guildDb.config.rolePowerMultipliers[role]}`).join('\n')}`,
+                ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -280,9 +307,11 @@ const printMinReputationTransfer = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MIN_REPUTATION_TRANSFER.value)) return false
 
         await interaction
-            ?.reply({content: guildDb.config.minReputationTransfer
+            ?.reply({
+                content: guildDb.config.minReputationTransfer
                     ? `To forward a message, you need to gather ${guildDb.config.minReputationTransfer} reputations.`
-                    : 'Forward message is disabled.', ephemeral: true})
+                    : 'Forward message is disabled.', ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -305,9 +334,11 @@ const printMinReputationStartProposal = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MIN_REPUTATION_START_PROPOSAL.value)) return false
 
         await interaction
-            ?.reply({content: guildDb.config.minReputationToStartProposal
+            ?.reply({
+                content: guildDb.config.minReputationToStartProposal
                     ? `To propose a vote, you need to gather ${guildDb.config.minReputationToStartProposal} reputations.`
-                    : 'Proposal is disabled.', ephemeral: true})
+                    : 'Proposal is disabled.', ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -330,9 +361,11 @@ const printMinReputationConfirmProposal = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MIN_REPUTATION_CONFIRM_PROPOSAL.value)) return false
 
         await interaction
-            ?.reply({content: guildDb.config.minReputationToConfirmProposal
+            ?.reply({
+                content: guildDb.config.minReputationToConfirmProposal
                     ? `For a proposal to be considered valid, ${guildDb.config.minReputationToConfirmProposal} reputations must be collected.`
-                    : 'Proposal is disabled.', ephemeral: true})
+                    : 'Proposal is disabled.', ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -355,9 +388,11 @@ const printChannelProposal = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.PROPOSAL_CHANNEL.value)) return false
 
         await interaction
-            ?.reply({content: guildDb.config.channelProposal
+            ?.reply({
+                content: guildDb.config.channelProposal
                     ? `Once having collected the minimum reputation required, the proposals will be proposed to the vote in channel <#${guildDb.config.channelProposal}>.`
-                    : 'Proposal is disabled', ephemeral: true})
+                    : 'Proposal is disabled', ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -379,10 +414,12 @@ const printChannelPantheons = async (interaction, guildDb) => {
     try {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.CHANNEL_PANTHEONS.value)) return false
 
-        await interaction.reply({content: `When a channel is set up as a pantheon, reactions will offer grants to the people mentioned instead of the author:\n`
+        await interaction.reply({
+            content: `When a channel is set up as a pantheon, reactions will offer grants to the people mentioned instead of the author:\n`
                 + Object.keys(guildDb.config.channelPantheons)
                     .filter(channel => guildDb.config.channelPantheons[channel])
-                .map((channel) => `<#${channel}>`).join('\n'), ephemeral: true})
+                    .map((channel) => `<#${channel}>`).join('\n'), ephemeral: true
+        })
         return true
     } catch (e) {
         logger.error(e)
@@ -401,7 +438,10 @@ const printReplyGrant = async (interaction, guildDb) => {
     try {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.REPLY_GRANT.value)) return false
 
-        await interaction.reply({content: `When you reply to a message, you will automatically offer ${guildDb.config.replyGrant} reputations to the message's author.`, ephemeral: true})
+        await interaction.reply({
+            content: `When you reply to a message, you will automatically offer ${guildDb.config.replyGrant} reputations to the message's author.`,
+            ephemeral: true
+        })
         return true
     } catch (e) {
         logger.error(e)
@@ -420,8 +460,11 @@ const printReactionGrants = async (interaction, guildDb) => {
     try {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.REACTION_GRANTS.value)) return false
 
-        await interaction.reply({content: `When you react to a message, you will automatically grant a determined amount of reputation based on the emoji you choose.\n\n${Object.keys(guildDb.config.reactionGrants)
-                .map((emoji) => `${emoji.includes(':') ? `<:${emoji}>`: emoji } => ${guildDb.config.reactionGrants[emoji]} reputations`).join('\n')}`, ephemeral: true})
+        await interaction.reply({
+            content: `When you react to a message, you will automatically grant a determined amount of reputation based on the emoji you choose.\n\n${Object.keys(guildDb.config.reactionGrants)
+                .map((emoji) => `${emoji.includes(':') ? `<:${emoji}>` : emoji} => ${guildDb.config.reactionGrants[emoji]} reputations`).join('\n')}`,
+            ephemeral: true
+        })
         return true
     } catch (e) {
         logger.error(e)
@@ -440,8 +483,11 @@ const printChannelGrantMultipliers = async (interaction, guildDb) => {
     try {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.CHANNEL_GRANT_MULTIPLIERS.value)) return false
 
-        await interaction.reply({content: `Based on the channel, you can apply a multiplier to your reaction and reply grant.\n\n${Object.keys(guildDb.config.channelGrantMultipliers)
-                .map((channel) => `${channel === 'default' ? channel : `<#${channel}>` } => x${guildDb.config.channelGrantMultipliers[channel]}`).join('\n')}`, ephemeral: true})
+        await interaction.reply({
+            content: `Based on the channel, you can apply a multiplier to your reaction and reply grant.\n\n${Object.keys(guildDb.config.channelGrantMultipliers)
+                .map((channel) => `${channel === 'default' ? channel : `<#${channel}>`} => x${guildDb.config.channelGrantMultipliers[channel]}`).join('\n')}`,
+            ephemeral: true
+        })
         return true
     } catch (e) {
         logger.error(e)
@@ -461,9 +507,11 @@ const printMinReputationMute = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MIN_REPUTATION_MUTE.value)) return false
 
         await interaction
-            ?.reply({content: guildDb.config.minReputationToMute
+            ?.reply({
+                content: guildDb.config.minReputationToMute
                     ? `To mute someone, you need to gather ${guildDb.config.minReputationToMute} reputations.`
-                    : 'Mute is disabled.', ephemeral: true})
+                    : 'Mute is disabled.', ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -486,9 +534,12 @@ const printReactionRoles = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.REACTION_ROLES.value)) return false
 
         await interaction
-            ?.reply({content: `When you react to a message, you will automatically be assigned to a discord role.\n\n${Object.keys(guildDb?.reactionRoles)
+            ?.reply({
+                content: `When you react to a message, you will automatically be assigned to a discord role.\n\n${Object.keys(guildDb?.reactionRoles)
                     .map((messageId) => `${messageId} => ${Object.keys(guildDb?.reactionRoles[messageId])
-                        .map((reaction) => `${reaction} -> <@&${guildDb?.reactionRoles[messageId][reaction]}>`).join('; ')}`).join('\n')}`, ephemeral: true})
+                        .map((reaction) => `${reaction} -> <@&${guildDb?.reactionRoles[messageId][reaction]}>`).join('; ')}`).join('\n')}`,
+                ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -511,8 +562,11 @@ const printReputationRoles = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.REPUTATION_ROLES.value)) return false
 
         await interaction
-            ?.reply({content: `Set a discord role based on your reputation.\n\n${Object.keys(guildDb?.reputationRoles)
-                    .map((role) => `<@&${role}> => ${guildDb?.reputationRoles[role]} reputations`).join('\n')}`, ephemeral: true})
+            ?.reply({
+                content: `Set a discord role based on your reputation.\n\n${Object.keys(guildDb?.reputationRoles)
+                    .map((role) => `<@&${role}> => ${guildDb?.reputationRoles[role]} reputations`).join('\n')}`,
+                ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -535,8 +589,10 @@ const printReactionTransfers = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.REACTION_TRANSFERS.value)) return false
 
         await interaction
-            ?.reply({content: `Transfer a message if enough reputation use this emoji.\n\n${Object.keys(guildDb?.reactionTransfers)
-                    .map((reaction) => reactionTransferToString(reaction, guildDb)).join('\n')}`, ephemeral: true})
+            ?.reply({
+                content: `Transfer a message if enough reputation use this emoji.\n\n${Object.keys(guildDb?.reactionTransfers)
+                    .map((reaction) => reactionTransferToString(reaction, guildDb)).join('\n')}`, ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -553,9 +609,9 @@ const reactionTransferToString = (reaction, guildDb) => {
     const channel = config.channel || config;
     const reputation = config.reputation;
     const deleteMessage = config.deleteMessage;
-    return `${reaction} => <#${channel}>
-        ${reputation ? ` | overridden reputation : ${reputation}` : ''}
-        ${deleteMessage === false ? ` | delete message after transfer : no` : ''}`;
+    return `${reaction} => <#${channel}>\
+    ${reputation ? `overridden reputation : ${reputation}` : ''}\
+    ${deleteMessage === false ? `delete message after transfer : no` : ''}`;
 }
 
 /**
@@ -569,10 +625,12 @@ const printMutedList = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MUTED_USERS.value)) return false
 
         await interaction
-            ?.reply({content: `List of users muted.\n\n${Object.keys(guildDb?.discordMutedUsers)
+            ?.reply({
+                content: `List of users muted.\n\n${Object.keys(guildDb?.discordMutedUsers)
                     .map((userDiscordId) => `<@!${userDiscordId}> => ${Moment(guildDb?.discordMutedUsers[userDiscordId]?.startDate)
                         .add(guildDb?.discordMutedUsers[userDiscordId]?.duration, 'minutes')
-                        .format('MMMM Do YYYY, h:mm a')}`).join('\n')}`, ephemeral: true})
+                        .format('MMMM Do YYYY, h:mm a')}`).join('\n')}`, ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -595,10 +653,12 @@ const printBlacklist = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.BLACKLIST.value)) return false
 
         await interaction
-            ?.reply({content: `List of users in blacklist.\n\n${Object.keys(guildDb?.blacklist||{})
+            ?.reply({
+                content: `List of users in blacklist.\n\n${Object.keys(guildDb?.blacklist || {})
                     ?.filter(userDiscordId => guildDb?.blacklist[userDiscordId])
                     .map((userDiscordId) => `<@!${userDiscordId}>`)
-                    .join('\n')}`, ephemeral: true})
+                    .join('\n')}`, ephemeral: true
+            })
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -621,16 +681,18 @@ const printPohVouchersReward = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.POH_VOUCHERS_REWARD.value)) return false
 
         await interaction
-          ?.reply({content: isPoHEnabled(guildDb)
-                ? `Vouchers receive ${guildDb.config.pohVouchersReward} reputations if the user they vouched rewards them.`
-                : 'Poh is disabled.', ephemeral: true})
-          ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.reply({
+                content: isPoHEnabled(guildDb)
+                    ? `Vouchers receive ${guildDb.config.pohVouchersReward} reputations if the user they vouched rewards them.`
+                    : 'Poh is disabled.', ephemeral: true
+            })
+            ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
         logger.error(e)
         await interaction
-          ?.reply({content: 'Something went wrong...', ephemeral: true})
-          ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.reply({content: 'Something went wrong...', ephemeral: true})
+            ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     }
 }
@@ -646,16 +708,18 @@ const printMinReputationIgnore = async (interaction, guildDb) => {
         if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.MIN_REPUTATION_IGNORE.value)) return false
 
         await interaction
-          ?.reply({content: guildDb.config.minReputationIgnore
-                ? `To flag a message as ignored by Demeter, you need to gather ${guildDb.config.minReputationIgnore} reputations.`
-                : 'Ignore message is disabled.', ephemeral: true})
-          ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.reply({
+                content: guildDb.config.minReputationIgnore
+                    ? `To flag a message as ignored by Demeter, you need to gather ${guildDb.config.minReputationIgnore} reputations.`
+                    : 'Ignore message is disabled.', ephemeral: true
+            })
+            ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
         logger.error(e)
         await interaction
-          ?.reply({content: 'Something went wrong...', ephemeral: true})
-          ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.reply({content: 'Something went wrong...', ephemeral: true})
+            ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     }
 }

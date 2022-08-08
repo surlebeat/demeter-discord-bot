@@ -121,6 +121,7 @@ Then for each channel you can create a custom emoji that members will use to red
 ![hs_bar](hs_bar.png?raw=true "hs_bar")  
 As soon as the minimum reputation has reacted with this emoji to the message, it will be transferred.  
 You can override the minimum reputation using the `reaction-transfer-override-repu` option.
+The `reaction-transfer-delete` option is also optional and defaults to _true (yes)_. You can specify the value _false_ if you would like that the original message remains.
 
 ## Reputation-weighted proposals
 

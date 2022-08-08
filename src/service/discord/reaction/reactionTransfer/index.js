@@ -53,9 +53,11 @@ export const transferMessage = async (messageReaction, user, isRemove, guildUuid
         await channel
             ?.send({content: `${message?.author} (transferred by the community) :\n${message?.content}`, files})
             ?.catch(() => logger.error('Failed to transfer message.'))
-        await message
-            ?.delete()
-            ?.catch(() => logger.error('Failed to remove original message.'))
+
+        if (reactionTransferChannelConfig.deleteMessage === undefined || reactionTransferChannelConfig.deleteMessage === true)
+            await message
+                ?.delete()
+                ?.catch(() => logger.error('Failed to remove original message.'))
         logger.debug('Transfer message done.')
 
         return true

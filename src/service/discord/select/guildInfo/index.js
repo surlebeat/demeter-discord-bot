@@ -552,7 +552,10 @@ const reactionTransferToString = (reaction, guildDb) => {
     const config = guildDb?.reactionTransfers[reaction];
     const channel = config.channel || config;
     const reputation = config.reputation;
-    return `${reaction} => <#${channel}>${reputation ? ` | overridden reputation : ${reputation}` : ''}`;
+    const deleteMessage = config.deleteMessage;
+    return `${reaction} => <#${channel}>
+        ${reputation ? ` | overridden reputation : ${reputation}` : ''}
+        ${deleteMessage === false ? ` | delete message after transfer : no` : ''}`;
 }
 
 /**

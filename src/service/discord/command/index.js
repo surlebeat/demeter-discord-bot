@@ -50,11 +50,6 @@ export const COMMANDS_NAME = {
 
             REPUTATION_ROLE_ROLE: {name: 'reputation-role-role'},
             REPUTATION_ROLE_MIN: {name: 'reputation-role-min'},
-
-            REACTION_TRANSFER_REPUTATION: {name: 'reaction-transfer-reputation'},
-            REACTION_TRANSFER_REACTION: {name: 'reaction-transfer-reaction'},
-            REACTION_TRANSFER_CHANNEL: {name: 'reaction-transfer-channel'},
-            REACTION_TRANSFER_OVERRIDE_REPUTATION: {name: 'reaction-transfer-override-repu'},
         },
         CONFIG_2: {
             name: 'config-2',
@@ -71,6 +66,12 @@ export const COMMANDS_NAME = {
             POH_VOUCHERS_REWARD: {name: 'poh-vouchers-reward'},
 
             MIN_REPUTATION_IGNORE: {name: 'min-reputation-ignore'},
+
+            REACTION_TRANSFER_REPUTATION: {name: 'reaction-transfer-reputation'},
+            REACTION_TRANSFER_REACTION: {name: 'reaction-transfer-reaction'},
+            REACTION_TRANSFER_CHANNEL: {name: 'reaction-transfer-channel'},
+            REACTION_TRANSFER_OVERRIDE_REPUTATION: {name: 'reaction-transfer-override-repu'},
+            REACTION_TRANSFER_DELETE: {name: 'reaction-transfer-delete'},
         },
         DB_URL: { name: 'db-url'}
     },
@@ -374,20 +375,24 @@ export const COMMANDS = [
                         description: 'Minimum reputation to ignore a message(0 = ignore functionality disabled)',
                     }, {
                         type: ApplicationCommandOptionTypes.NUMBER,
-                        name: COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_REPUTATION.name,
+                        name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_REPUTATION.name,
                         description: 'Minimum reputation to transfer a message(0 = no transfer)',
                     }, {
                         type: ApplicationCommandOptionTypes.STRING,
-                        name: COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_REACTION.name,
+                        name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_REACTION.name,
                         description: 'Reaction to transfer a message',
                     }, {
                         type: ApplicationCommandOptionTypes.CHANNEL,
-                        name: COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_CHANNEL.name,
+                        name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_CHANNEL.name,
                         description: 'Destination to transfer a message',
                     }, {
                         type: ApplicationCommandOptionTypes.NUMBER,
-                        name: COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_OVERRIDE_REPUTATION.name,
+                        name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_OVERRIDE_REPUTATION.name,
                         description: 'Override the minimum reputation to transfer a message',
+                    }, {
+                        type: ApplicationCommandOptionTypes.BOOLEAN,
+                        name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_DELETE.name,
+                        description: 'Whether the original message should be deleted after transfer (defaults to true)',
                     }
                 ]
             },

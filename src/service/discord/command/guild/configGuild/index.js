@@ -8,8 +8,8 @@ import {
     setMinReputationDecay
 } from '../../../../core/guild/index.js'
 import {
-  removeReputationRoleFromAll,
-  updateReputationRole
+    removeReputationRoleFromAll,
+    updateReputationRole
 } from '../../../reputation/reputationRole/index.js'
 import {COMMANDS_NAME} from '../../index.js'
 import {makeGuild} from '../../../../core/index.js'
@@ -57,12 +57,12 @@ export const setCaptchaRole = async (captchaRole, guildUuid, db, mutex) => basic
  * @returns {Promise<boolean>}
  */
 export const setCaptchaSteps = async (captchaSteps, guildUuid, db, mutex) => basicSetter(
-  guildUuid,
-  async () => captchaSteps > 0 && captchaSteps <= 3,
-  (guildDb) => {
-    guildDb.config.captchaSteps = captchaSteps
-    return guildDb
-  }, db, mutex)
+    guildUuid,
+    async () => captchaSteps > 0 && captchaSteps <= 3,
+    (guildDb) => {
+        guildDb.config.captchaSteps = captchaSteps
+        return guildDb
+    }, db, mutex)
 
 /**
  * Update the guild discord matching quantity
@@ -133,12 +133,11 @@ export const setReactionGrant = async (grant, reaction, guildUuid, db, mutex) =>
     guildUuid,
     async () => grant >= 0,
     (guildDb) => {
-        if (reaction){
+        if (reaction) {
             const regex = /<:(.*):\d+>|(.)/gm
             let emoji = reaction.replace(regex, '$1') || reaction.replace(regex, '$2')
             guildDb.config.reactionGrants[emoji] = grant
-        }
-        else
+        } else
             guildDb.config.reactionGrants['default'] = grant
         return guildDb
     }, db, mutex)
@@ -223,14 +222,13 @@ export const setReputationRole = async (role, min, guildUuid, client, db, mutex)
     async () => role,
     async (guildDb) => {
         if (typeof min === 'number') {
-          guildDb.reputationRoles[role] = min
-          const reputationRoles = {}
-          reputationRoles[role] = min
-          await updateReputationRole(db?.data[guildUuid]?.users, reputationRoles, db?.data[guildUuid]?.guildDiscordId, {client})
-        }
-        else {
-          delete guildDb.reputationRoles[role]
-          await removeReputationRoleFromAll(guildDb.users, role, db.data[guildUuid]?.guildDiscordId, {client})
+            guildDb.reputationRoles[role] = min
+            const reputationRoles = {}
+            reputationRoles[role] = min
+            await updateReputationRole(db?.data[guildUuid]?.users, reputationRoles, db?.data[guildUuid]?.guildDiscordId, {client})
+        } else {
+            delete guildDb.reputationRoles[role]
+            await removeReputationRoleFromAll(guildDb.users, role, db.data[guildUuid]?.guildDiscordId, {client})
         }
         return guildDb
     }, db, mutex)
@@ -256,12 +254,13 @@ export const setReactionTransferReputation = async (reputation, guildUuid, db, m
  * @param reaction - Reaction that will trigger the transfer
  * @param channel - Where to transfer
  * @param reputation - Override how much reputation is required to transfer a message
+ * @param deleteMessage - Whether the original message should be deleted after transfer
  * @param guildUuid - Guild unique identifier
  * @param db - In-memory database
  * @param mutex - Mutex to access the database safely
  * @returns {Promise<boolean>}
  */
-export const setReactionTransfer = async (reaction, channel, reputation, guildUuid, db, mutex) => basicSetter(
+export const setReactionTransfer = async (reaction, channel, reputation, deleteMessage = true, guildUuid, db, mutex) => basicSetter(
     guildUuid,
     async () => {
         const regex = /<:(.*):\d+>|(.)/gm
@@ -272,7 +271,11 @@ export const setReactionTransfer = async (reaction, channel, reputation, guildUu
         const regex = /<:(.*):\d+>|(.)/gm
         let emoji = reaction.replace(regex, '$1') || reaction.replace(regex, '$2')
         if (channel)
-            guildDb.reactionTransfers[emoji] = reputation ? {channel , reputation} : channel;
+            guildDb.reactionTransfers[emoji] = {
+                channel,
+                reputation,
+                deleteMessage
+            };
         else
             delete guildDb.reactionTransfers[emoji]
         return guildDb
@@ -369,12 +372,12 @@ export const setBlacklist = async (userDiscordId, enable, guildUuid, db, mutex) 
  * @returns {Promise<boolean>}
  */
 export const setPohVouchersReward = async (reputation, guildUuid, db, mutex) => basicSetter(
-  guildUuid,
-  async () => typeof reputation === 'number',
-  async (guildDb) => {
-    guildDb.config.pohVouchersReward = reputation
-    return guildDb
-  }, db, mutex)
+    guildUuid,
+    async () => typeof reputation === 'number',
+    async (guildDb) => {
+        guildDb.config.pohVouchersReward = reputation
+        return guildDb
+    }, db, mutex)
 
 /**
  * Update how much reputation is required to ignore a message
@@ -385,12 +388,12 @@ export const setPohVouchersReward = async (reputation, guildUuid, db, mutex) => 
  * @returns {Promise<boolean>}
  */
 export const setMinReputationIgnore = async (reputation, guildUuid, db, mutex) => basicSetter(
-  guildUuid,
-  async () => typeof reputation === 'number',
-  async (guildDb) => {
-    guildDb.config.minReputationIgnore = reputation
-    return guildDb
-  }, db, mutex)
+    guildUuid,
+    async () => typeof reputation === 'number',
+    async (guildDb) => {
+        guildDb.config.minReputationIgnore = reputation
+        return guildDb
+    }, db, mutex)
 
 /**
  * Initialize the guild
@@ -439,8 +442,8 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
 
         logger.debug('guildUuid ' + guildUuid)
         if (!guildUuid) {
-          logger.debug('isAdmin ' + isAdmin)
-          if (!isAdmin) return true
+            logger.debug('isAdmin ' + isAdmin)
+            if (!isAdmin) return true
             await initGuild(interaction?.guildId, db, mutex)
             await db.read()
 
@@ -457,136 +460,137 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
 
         const adminRole = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.ADMIN_ROLE.name)?.value
         if (adminRole)
-            if(!await setAdminRole(adminRole, guildUuid, db, mutex))
+            if (!await setAdminRole(adminRole, guildUuid, db, mutex))
                 response += ''
 
         const captchaRole = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.CAPTCHA_ROLE.name)?.value
         if (captchaRole)
-            if(!await setCaptchaRole(captchaRole, guildUuid, db, mutex))
+            if (!await setCaptchaRole(captchaRole, guildUuid, db, mutex))
                 response += ''
 
         const captchaSteps = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.CAPTCHA_STEPS.name)?.value
         if (captchaSteps)
-          if(!await setCaptchaSteps(captchaSteps, guildUuid, db, mutex))
-            response += 'Number of captcha steps need to be > 0 and <= 3\n'
+            if (!await setCaptchaSteps(captchaSteps, guildUuid, db, mutex))
+                response += 'Number of captcha steps need to be > 0 and <= 3\n'
 
         const defaultReputation = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.DEFAULT_REPUTATION.name)?.value
         if (typeof defaultReputation === 'number')
-            if(!await setDefaultReputation(defaultReputation, guildUuid, db, mutex))
+            if (!await setDefaultReputation(defaultReputation, guildUuid, db, mutex))
                 response += 'How much will receive a new user need to be >= 0\n'
 
         const discordMatching = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.DISCORD_MATCHING.name)?.value
         if (typeof discordMatching === 'number')
-            if(!await setMatchingDiscord(discordMatching, guildUuid, db, mutex))
+            if (!await setMatchingDiscord(discordMatching, guildUuid, db, mutex))
                 response += 'Default reputation for Quadratic funding need to be >= 0\n'
 
         const duration = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.DURATION.name)?.value
         if (typeof duration === 'number')
-            if(!await setDuration(duration, guildUuid, db, mutex))
+            if (!await setDuration(duration, guildUuid, db, mutex))
                 response += 'Duration of each round in days need to be > 0\n'
 
         const minDecay = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.MIN_DECAY.name)?.value
         if (typeof minDecay === 'number')
-            if(!await setMinReputationDecay(minDecay, guildUuid, db, mutex))
+            if (!await setMinReputationDecay(minDecay, guildUuid, db, mutex))
                 response += 'Min reputation decay in percent at each round(eg: 0.01) need to be >= 0 and =< 1 and <= max decay\n'
 
         const maxDecay = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.MAX_DECAY.name)?.value
         if (typeof maxDecay === 'number')
-            if(!await setMaxReputationDecay(maxDecay, guildUuid, db, mutex))
+            if (!await setMaxReputationDecay(maxDecay, guildUuid, db, mutex))
                 response += 'Max reputation decay in percent at each round(eg: 0.01) need to be >= 0 and =< 1 and >= min decay\n'
 
         const roleMultiplier = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.ROLE_MULTIPLIER.name)?.value
         const role = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.ROLE.name)?.value
         if (typeof roleMultiplier === 'number')
-            if(!await setRolePower(roleMultiplier, role, guildUuid, db, mutex))
+            if (!await setRolePower(roleMultiplier, role, guildUuid, db, mutex))
                 response += 'Power multiplier for this role need to be >= 0\n'
 
         const channelMultiplier = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.CHANNEL_MULTIPLIER.name)?.value
         const channel = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.CHANNEL.name)?.value
         if (typeof channelMultiplier === 'number')
-            if(!await setChannelMultiplier(channelMultiplier, channel, guildUuid, db, mutex))
+            if (!await setChannelMultiplier(channelMultiplier, channel, guildUuid, db, mutex))
                 response += 'Grant multiplier for this channel need to be >= 0\n'
 
         const reactionGrant = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_GRANT.name)?.value
         const reaction = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION.name)?.value
         if (typeof reactionGrant === 'number')
-            if(!await setReactionGrant(reactionGrant, reaction, guildUuid, db, mutex))
+            if (!await setReactionGrant(reactionGrant, reaction, guildUuid, db, mutex))
                 response += 'How much will be granted per reaction need to be >= 0\n'
 
         const replyGrant = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REPLY_GRANT.name)?.value
         if (replyGrant)
-            if(!await setReplyGrant(replyGrant, guildUuid, db, mutex))
+            if (!await setReplyGrant(replyGrant, guildUuid, db, mutex))
                 response += 'How much will be granted per reply need to be >= 0\n'
 
         const channelPantheonEnable = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.CHANNEL_PANTHEON_ENABLE.name)?.value
         const channelPantheon = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.CHANNEL_PANTHEON.name)?.value
         if (channelPantheon)
-            if(!await setChannelPantheon(channelPantheonEnable, channelPantheon, guildUuid, db, mutex))
+            if (!await setChannelPantheon(channelPantheonEnable, channelPantheon, guildUuid, db, mutex))
                 response += 'Set pantheon failed.'
 
         const reactionRoleMessage = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_ROLE_MESSAGE.name)?.value
         const reactionRoleReaction = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_ROLE_REACTION.name)?.value
         const reactionRoleRole = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_ROLE_ROLE.name)?.value
         if (reactionRoleMessage && reactionRoleReaction)
-            if(!await setReactionRole(reactionRoleMessage, reactionRoleReaction, reactionRoleRole, guildUuid, db, mutex))
+            if (!await setReactionRole(reactionRoleMessage, reactionRoleReaction, reactionRoleRole, guildUuid, db, mutex))
                 response += 'Please provide at least a message link and an emoji(if no role = remove)'
 
         const reputationRoleRole = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REPUTATION_ROLE_ROLE.name)?.value
         const reputationRoleMin = options?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REPUTATION_ROLE_MIN.name)?.value
         if (reputationRoleRole)
-            if(!await setReputationRole(reputationRoleRole, reputationRoleMin, guildUuid, interaction.client, db, mutex))
+            if (!await setReputationRole(reputationRoleRole, reputationRoleMin, guildUuid, interaction.client, db, mutex))
                 response += 'Please provide at least a role(if no min = remove)'
 
         const minReputationStartProposal = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_START_PROPOSAL.name)?.value
         if (typeof minReputationStartProposal === 'number')
-            if(!await setMinReputationStartProposal(minReputationStartProposal, guildUuid, db, mutex))
+            if (!await setMinReputationStartProposal(minReputationStartProposal, guildUuid, db, mutex))
                 response += 'The minimum reputation to start a proposal should be a number(0 = no proposal)'
 
         const minReputationConfirmProposal = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_CONFIRM_PROPOSAL.name)?.value
         if (typeof minReputationConfirmProposal === 'number')
-            if(!await setMinReputationConfirmProposal(minReputationConfirmProposal, guildUuid, db, mutex))
+            if (!await setMinReputationConfirmProposal(minReputationConfirmProposal, guildUuid, db, mutex))
                 response += 'The minimum reputation to accept a proposal should be a number(0 = no proposal)'
 
         const minReputationMute = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_MUTE.name)?.value
         if (typeof minReputationMute === 'number')
-            if(!await setMinReputationMute(minReputationMute, guildUuid, db, mutex))
+            if (!await setMinReputationMute(minReputationMute, guildUuid, db, mutex))
                 response += 'The minimum reputation to mute should be a number(0 = no mute)'
 
         const channelProposal = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.CHANNEL_PROPOSAL.name)?.value
         if (channelProposal)
-            if(!await setChannelProposal(channelProposal, guildUuid, db, mutex))
+            if (!await setChannelProposal(channelProposal, guildUuid, db, mutex))
                 response += 'Where to post the proposal'
 
         const blacklistUser = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.BLACKLIST_USER.name)?.value
         const blacklistEnable = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.BLACKLIST_USER_ENABLE.name)?.value
         if (blacklistUser)
-            if(!await setBlacklist(blacklistUser, blacklistEnable, guildUuid, db, mutex))
+            if (!await setBlacklist(blacklistUser, blacklistEnable, guildUuid, db, mutex))
                 response += 'Please provide a user to add/remove from blacklist'
 
         const pohVouchersReward = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.POH_VOUCHERS_REWARD.name)?.value
         if (typeof pohVouchersReward === 'number')
-          await setPohVouchersReward(pohVouchersReward, guildUuid, db, mutex)
+            await setPohVouchersReward(pohVouchersReward, guildUuid, db, mutex)
 
         const minReputationIgnore = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_IGNORE.name)?.value
         if (minReputationIgnore)
-          if(!await setMinReputationIgnore(minReputationIgnore, guildUuid, db, mutex))
-            response += 'The minimum reputation to ignore a message should be a number(0 = ignore functionality disabled)'
+            if (!await setMinReputationIgnore(minReputationIgnore, guildUuid, db, mutex))
+                response += 'The minimum reputation to ignore a message should be a number(0 = ignore functionality disabled)'
 
-        const reactionTransferReaction = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_REACTION.name)?.value
-        const reactionTransferChannel = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_CHANNEL.name)?.value
-        const reactionTransferOverrideReputation = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_OVERRIDE_REPUTATION.name)?.value
+        const reactionTransferReaction = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_REACTION.name)?.value
+        const reactionTransferChannel = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_CHANNEL.name)?.value
+        const reactionTransferOverrideReputation = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_OVERRIDE_REPUTATION.name)?.value
+        const reactionTransferDelete = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_DELETE.name)?.value
         if (reactionTransferReaction)
-            if(!await setReactionTransfer(reactionTransferReaction, reactionTransferChannel, reactionTransferOverrideReputation, guildUuid, db, mutex))
+            if (!await setReactionTransfer(reactionTransferReaction, reactionTransferChannel, reactionTransferOverrideReputation, reactionTransferDelete, guildUuid, db, mutex))
                 response += 'Please provide at least a reaction(if no channel = remove)'
 
-        const reactionTransferReputation = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG.REACTION_TRANSFER_REPUTATION.name)?.value
+        const reactionTransferReputation = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_REPUTATION.name)?.value
         if (typeof reactionTransferReputation === 'number')
-            if(!await setReactionTransferReputation(reactionTransferReputation, guildUuid, db, mutex))
+            if (!await setReactionTransferReputation(reactionTransferReputation, guildUuid, db, mutex))
                 response += 'The minimum reputation to transfer a message should be a number(0 = no transfer)'
 
         await interaction
-              ?.reply({content: response || 'Done !', ephemeral: true})
-              ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.reply({content: response || 'Done !', ephemeral: true})
+            ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
         logger.error(e)

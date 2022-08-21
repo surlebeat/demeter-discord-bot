@@ -2,6 +2,7 @@ import logger from '../../core/winston/index.js'
 import {processReplyGrant} from './replyGrant/index.js'
 import {processMute} from './mute/index.js'
 import {checkIgnored} from './ignore/index.js';
+import {processAntiSpam} from "./anti-spam/index.js";
 
 /**
  *
@@ -17,6 +18,8 @@ export const processMessage = async (message, db, mutex) => {
         if (!guildUuid) return true
 
         if (await processMute(message, guildUuid, db, mutex)) return true
+
+        if (await processAntiSpam(message, guildUuid, db)) return true
 
         if(message.type !== 'REPLY') return true
 

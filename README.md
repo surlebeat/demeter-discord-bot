@@ -143,6 +143,10 @@ People reacting with an emoji to this message will help the people mentioned ear
 You can offer to your community to censor a user, just choose the amount of reputation needed via the command `/guild config-2 min-rep-mute:100`(0=disabled)  
 Then anyone can start a vote to mute for x minutes via the following command `/proposal mute user:@Charles duration:5`
 
+User spamming the same message three time per minute are automatically muted and the three messages get deleted.
+
+Admins can unmute users using the command `/user unmute user:@OoTsun`.
+
 ## Giveaway
 
 You can run a reputation-weighted giveaway with the following command `/giveaway message:https://discord.com/channels/745336259194650788/834432995972349973/925382608970465341 weighted:True`  

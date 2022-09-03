@@ -11,6 +11,7 @@ import {processProposal} from './proposal/index.js'
 import {processUser} from './user/index.js'
 import {processGiveaway} from "./giveaway/index.js";
 import {processProofOfHumanity} from './proofOfHumanity/index.js';
+import {processTwitter} from './twitter/index.js';
 
 export const COMMANDS_NAME = {
     GUILD: {
@@ -234,6 +235,9 @@ export const COMMANDS_NAME = {
         THANK_VOUCHER: {
             name: 'thank-voucher'
         }
+    },
+    TWITTER_POST: {
+        name: 'Tweet with Demeter'
     }
 }
 
@@ -737,6 +741,9 @@ export const COMMANDS = [
                 description: 'Thank your voucher and unregister from the list of candidates'
             },
         ]
+    },
+    {
+        name: COMMANDS_NAME.TWITTER_POST.name, type: 3
     }
 ]
 
@@ -770,6 +777,7 @@ const processCommand = async (interaction, db, mutex, salt, noiseImg, clientWeb3
         if(await processProposal(interaction, guildUuid, db, mutex))return true
         if(await processGiveaway(interaction, guildUuid, db, mutex))return true
         if(await processProofOfHumanity(interaction, guildUuid, db, mutex))return true
+        if(await processTwitter(interaction, guildUuid, db, mutex))return true
 
         if(await processButton(interaction, guildUuid, db, mutex, salt, noiseImg))return true
 

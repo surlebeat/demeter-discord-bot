@@ -74,6 +74,14 @@ export const COMMANDS_NAME = {
             REACTION_TRANSFER_OVERRIDE_REPUTATION: {name: 'reaction-transfer-override-repu'},
             REACTION_TRANSFER_DELETE: {name: 'reaction-transfer-delete'},
         },
+        CONFIG_TWITTER: {
+            name: 'config-twitter',
+
+            TWITTER_ADMIN_ROLE: {name: 'twitter-admin-role'},
+            PROPOSAL_DURATION: {name: 'twitter-proposal-duration'},
+            MIN_REPUTATION_PROPOSAL: {name: 'twitter-min-rep-proposal'},
+            MIN_IN_FAVOR_MEMBERS: {name: 'twitter-min-in-favor-members'},
+        },
         DB_URL: { name: 'db-url'}
     },
     ROUND: {
@@ -397,6 +405,33 @@ export const COMMANDS = [
                         type: ApplicationCommandOptionTypes.BOOLEAN,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_DELETE.name,
                         description: 'Whether the original message should be deleted after transfer (defaults to true)',
+                    }
+                ]
+            },
+            {
+                type: ApplicationCommandOptionTypes.SUB_COMMAND,
+                name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.name,
+                description: 'Config guild Twitter (admin only). This feature allows content curation for Twitter posts.',
+                options: [
+                    {
+                        type: ApplicationCommandOptionTypes.ROLE,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.TWITTER_ADMIN_ROLE.name,
+                        description: 'The Discord role of Twitter admins. They will be the only ones allowed to start a proposal.',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.PROPOSAL_DURATION.name,
+                        description: 'Proposal\'s duration in days(>0)',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.MIN_REPUTATION_PROPOSAL.name,
+                        description: 'How much reputation to validate a Twitter proposal (0 = no vote)',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.MIN_IN_FAVOR_MEMBERS.name,
+                        description: 'How much in favor members are required to post the content on Twitter',
                     }
                 ]
             },

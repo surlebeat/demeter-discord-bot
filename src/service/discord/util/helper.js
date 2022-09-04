@@ -4,7 +4,8 @@
  * @returns {Boolean}
  */
 export const isPoHEnabled = (guildDb) => {
-  return guildDb.config.pohVouchersReward && guildDb.config.pohVouchersReward >= 0
+  const pohVouchersReward = guildDb.config.pohVouchersReward
+  return pohVouchersReward !== undefined && pohVouchersReward >= 0
 }
 
 /**
@@ -13,5 +14,6 @@ export const isPoHEnabled = (guildDb) => {
  * @returns {Boolean}
  */
 export const isTwitterEnabled = (guildDb) => {
-  return guildDb.config.twitterRole !== undefined && guildDb.config.twitterRole !== null;
+  const twitterMinRepProposal = guildDb.config.twitterMinRepProposal
+  return twitterMinRepProposal !== undefined && twitterMinRepProposal > 0
 }

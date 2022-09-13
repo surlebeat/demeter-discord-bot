@@ -14,7 +14,7 @@ const antiSpamMap = new Map();
 export const processAntiSpam = async (message, guildUuid, db) => {
     logger.debug('Process antispam...')
     try {
-        if (!guildUuid || message?.author?.id === message?.client?.user?.id) return false
+        if (!guildUuid || message?.author?.id === message?.client?.user?.id || !message.content) return false
 
         clearOldMessages();
         const lastUserMessages = antiSpamMap.get(message?.author?.id) || new Map()

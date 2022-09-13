@@ -79,10 +79,12 @@ export const onMessageCreate = async (message, client, db, mutex) => {
  */
 export const checkWhenReady = async (client, guildDiscordIds) => {
     try {
+        logger.debug('Delete and recreate commands...')
         for (const guildDiscordId of guildDiscordIds) {
             await deleteCommands(client, guildDiscordId)
             await createCommand(client, guildDiscordId)
         }
+        logger.debug('Delete and recreate commands done.')
 
         logger.info('Discord bot live !')
     } catch (e) {

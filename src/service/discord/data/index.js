@@ -141,6 +141,7 @@ export const makeDiscord = {
      * @param reputationRoles - Add/remove this role if enough reputation {role: minReputation}
      * @param reactionTransfers - If user react transfer message to this channel {reaction: channel}
      * @param discordProposals - Discord proposals {sourceMessageId: DiscordProposal}
+     * @param twitterProposals - Twitter post proposals {sourceMessageId: TwitterPostProposal}
      * @param discordMutedUsers - User muted {userDiscordId: DiscordMute}
      * @param blacklist - Blacklist of user discord id.
      * @returns {{discordMutedUsers: {}, reactionTransfers: {}, discordProposals: {}, reputationRoles: {}, guildDiscordId, reactionRoles: {}}}
@@ -151,6 +152,7 @@ export const makeDiscord = {
         reputationRoles={},
         reactionTransfers={},
         discordProposals= {},
+        twitterProposals= {},
         discordMutedUsers= {},
         blacklist = {},
         ) => ({
@@ -159,42 +161,28 @@ export const makeDiscord = {
         reputationRoles,
         reactionTransfers,
         discordProposals,
+        twitterProposals,
         discordMutedUsers,
         blacklist,
     }),
 
     /**
      * Twitter post proposal
-     * @param startDate - When the vote start
      * @param endDate - When the vote end
-     * @param authorUuid - User unique identifier of author of this proposal
-     * @param duration - How much day
      * @param postContent - The content to be posted on Twitter
-     * @param proposalMessageId - Discord message Id of proposal
-     * @param inFavor - How much reputation in favor
-     * @param against - How much reputation against
-     * @param nbMembersInFavor - How much members are in favor
-     * @returns {{duration: number, inFavor: number, endDate: string, authorUuid: string, against: number, postContent: string, nbMembersInFavor: number, startDate: string, proposalMessageId: string}}
+     * @param channelId - Discord channel id of proposal
+     * @param targetMessageId - Discord message id of the targeted message
+     * @returns {{endDate: string, postContent: string, channelId: string, targetMessageId: string}}
      */
     makeTwitterPostProposal: (
-      startDate='',
       endDate='',
-      authorUuid = '',
-      duration = 3,
       postContent = '',
-      proposalMessageId = '',
-      inFavor = 0,
-      against = 0,
-      nbMembersInFavor = 0,
+      channelId = '',
+      targetMessageId = ''
     ) => ({
-        startDate,
         endDate,
-        authorUuid,
-        duration,
         postContent,
-        proposalMessageId,
-        inFavor,
-        against,
-        nbMembersInFavor,
+        channelId,
+        targetMessageId
     }),
 }

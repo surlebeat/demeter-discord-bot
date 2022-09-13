@@ -9,8 +9,7 @@ export const SELECT_GUILD_INFO = {
 }
 export const SELECT_GUILD_INFO_OPTIONS = {
     ADMIN_ROLE: {value: 'admin-role', label: '🤠 admin role'},
-    CAPTCHA_ROLE: {value: 'captcha-role', label: '🤖 captcha role'},
-    CAPTCHA_STEPS: {value: 'captcha-steps', label: '🎚️ captcha steps'},
+    CAPTCHA: {value: 'captcha', label: '🤖 captcha'},
 
     DEFAULT_REPUTATION: {value: 'default-reputation', label: '🐣 default reputation'},
     ROUND_DURATION: {value: 'round-duration', label: '⏱ round duration'},
@@ -47,6 +46,8 @@ export const SELECT_GUILD_INFO_OPTIONS = {
     POH_VOUCHERS_REWARD: {value: 'poh-vouchers-reward', label: '💰 poh vouchers reward'},
 
     MIN_REPUTATION_IGNORE: {value: 'min-reputation-ignore', label: '🙈 min reputation to flag a message as ignored'},
+
+    TWITTER_CONFIG: {value: 'twitter-config', label: '🐦 Twitter integration configuration'},
 }
 
 export const guildInfoComponents = [new MessageActionRow()
@@ -90,42 +91,19 @@ const printAdminRole = async (interaction, guildDb) => {
  * @param guildDb - in-memory database
  * @returns {Promise<boolean>}
  */
-const printCaptchaRole = async (interaction, guildDb) => {
+const printCaptcha = async (interaction, guildDb) => {
     try {
-        if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.CAPTCHA_ROLE.value)) return false
+        if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.CAPTCHA.value)) return false
+
+        let content = `The verification requires ${guildDb.config.captchaSteps} captcha step(s).`
+        if(guildDb.config.captchaRole) {
+            content += `\n<@&${guildDb.config.captchaRole}> is added when the user has passed the captcha verification.`
+        } else {
+            content += '\nNo captcha role set'
+        }
 
         await interaction
-            ?.reply({
-                content: guildDb.config.captchaRole
-                    ? `<@&${guildDb.config.captchaRole}> is added when the user has passed the captcha verification.`
-                    : 'No captcha role set', ephemeral: true
-            })
-            ?.catch(() => logger.error('Reply interaction failed.'))
-        return true
-    } catch (e) {
-        logger.error(e)
-        await interaction
-            ?.reply({content: 'Something went wrong...', ephemeral: true})
-            ?.catch(() => logger.error('Reply interaction failed.'))
-        return true
-    }
-}
-
-/**
- *
- * @param interaction - Discord interaction
- * @param guildDb - in-memory database
- * @returns {Promise<boolean>}
- */
-const printCaptchaSteps = async (interaction, guildDb) => {
-    try {
-        if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.CAPTCHA_STEPS.value)) return false
-
-        await interaction
-            ?.reply({
-                content: `The verification requires ${guildDb.config.captchaSteps} captcha step(s).`,
-                ephemeral: true
-            })
+            ?.reply({content: content, ephemeral: true})
             ?.catch(() => logger.error('Reply interaction failed.'))
         return true
     } catch (e) {
@@ -725,6 +703,36 @@ const printMinReputationIgnore = async (interaction, guildDb) => {
 }
 
 /**
+ *
+ * @param interaction - Discord interaction
+ * @param guildDb - in-memory database
+ * @returns {Promise<boolean>}
+ */
+const printTwitterConfig = async (interaction, guildDb) => {
+    try {
+        if (!interaction?.values?.includes(SELECT_GUILD_INFO_OPTIONS.TWITTER_CONFIG.value)) return false
+
+        let content = `Twitter admin role: <@&${guildDb.config.twitterAdminRole}>`
+        content += `\nTwitter member role: <@&${guildDb.config.twitterMemberRole}>`
+        content += `\nTwitter proposal duration: ${guildDb.config.twitterProposalDuration} day(s)`
+        content += `\nTwitter minimum reputation required to close a proposal: ${guildDb.config.twitterMinRepProposal}`
+        content += `\nTwitter number of in favor members required to accept a proposal: ${guildDb.config.twitterMinInFavorMembers}`
+        await interaction
+          ?.reply({
+              content: content, ephemeral: true
+          })
+          ?.catch(() => logger.error('Reply interaction failed.'))
+        return true
+    } catch (e) {
+        logger.error(e)
+        await interaction
+          ?.reply({content: 'Something went wrong...', ephemeral: true})
+          ?.catch(() => logger.error('Reply interaction failed.'))
+        return true
+    }
+}
+
+/**
  * Process all print interaction
  * @param interaction - Discord interaction
  * @param guildUuid - Guild unique identifier
@@ -739,8 +747,7 @@ export const printGuildInfo = async (interaction, guildUuid, db) => {
         const guildDb = db.data[guildUuid]
 
         if (await printAdminRole(interaction, guildDb)) return true
-        if (await printCaptchaRole(interaction, guildDb)) return true
-        if (await printCaptchaSteps(interaction, guildDb)) return true
+        if (await printCaptcha(interaction, guildDb)) return true
 
         if (await printDefaultReputation(interaction, guildDb)) return true
         if (await printRoundDuration(interaction, guildDb)) return true
@@ -774,6 +781,8 @@ export const printGuildInfo = async (interaction, guildUuid, db) => {
         if (await printPohVouchersReward(interaction, guildDb)) return true
 
         if (await printMinReputationIgnore(interaction, guildDb)) return true
+
+        if (await printTwitterConfig(interaction, guildDb)) return true
 
         return false
     } catch (e) {

@@ -89,8 +89,8 @@ export const checkEndProposal = async (db, mutex, discord) => {
                     db.data[guildUuid].discordProposals[proposalId].against = sumAgainst
                     logger.debug('Update proposal message done.')
 
-                    const content = `✅ ${sumForCount} members(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumFor)} reputations)\n`
-                        + `❌ ${sumAgainstCount} members(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumAgainst)} reputations)\n`
+                    const content = `✅ ${sumForCount} users(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumFor)} reputations)\n`
+                        + `❌ ${sumAgainstCount} users(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumAgainst)} reputations)\n`
 
                     logger.debug('Check if enough reputation voted...')
                     if ((sumFor + sumAgainst) < db?.data[guildUuid]?.config?.minReputationToConfirmProposal){

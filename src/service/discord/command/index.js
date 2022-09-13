@@ -78,9 +78,12 @@ export const COMMANDS_NAME = {
             name: 'config-twitter',
 
             TWITTER_ADMIN_ROLE: {name: 'twitter-admin-role'},
+            TWITTER_MEMBER_ROLE: {name: 'twitter-member-role'},
             PROPOSAL_DURATION: {name: 'twitter-proposal-duration'},
             MIN_REPUTATION_PROPOSAL: {name: 'twitter-min-rep-proposal'},
             MIN_IN_FAVOR_MEMBERS: {name: 'twitter-min-in-favor-members'},
+            ACCESS_TOKEN: {name: 'twitter-access-token'},
+            REFRESH_TOKEN: {name: 'twitter-refresh-token'},
         },
         DB_URL: { name: 'db-url'}
     },
@@ -419,6 +422,11 @@ export const COMMANDS = [
                         description: 'The Discord role of Twitter admins. They will be the only ones allowed to start a proposal.',
                     },
                     {
+                        type: ApplicationCommandOptionTypes.ROLE,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.TWITTER_MEMBER_ROLE.name,
+                        description: 'The Discord role of Twitter members. .',
+                    },
+                    {
                         type: ApplicationCommandOptionTypes.NUMBER,
                         name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.PROPOSAL_DURATION.name,
                         description: 'Proposal\'s duration in days(>0)',
@@ -432,6 +440,16 @@ export const COMMANDS = [
                         type: ApplicationCommandOptionTypes.NUMBER,
                         name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.MIN_IN_FAVOR_MEMBERS.name,
                         description: 'How much in favor members are required to post the content on Twitter',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.STRING,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.ACCESS_TOKEN.name,
+                        description: 'The access token that will be used to authenticate against the Twitter API v2',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.STRING,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.REFRESH_TOKEN.name,
+                        description: 'The refresh token that will be used to authenticate against the Twitter API v2',
                     }
                 ]
             },

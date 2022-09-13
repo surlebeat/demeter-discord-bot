@@ -1,6 +1,10 @@
 import logger from "../winston/index.js";
 import {TwitterApiAutoTokenRefresher} from "@twitter-api-v2/plugin-token-refresher";
-import {getTwitterOauth2ClientIdFor, getTwitterOauth2ClientSecretFor} from "../../discord/util/helper.js";
+import {
+    getPostContent,
+    getTwitterOauth2ClientIdFor,
+    getTwitterOauth2ClientSecretFor
+} from "../../discord/util/helper.js";
 import {TwitterApi} from "twitter-api-v2";
 import Moment from "moment";
 
@@ -86,8 +90,7 @@ export const checkEndTwitterProposal = async (db, mutex, discord) => {
                     const tokens = proposalMessage?.content.split('\n\n')
                     await proposalMessage?.edit(
                         tokens[0]
-                        + '\n\n'
-                        + tokens[2]
+                        + getPostContent(tokens)
                         + `\n\n**The delay expired.** The content will not be posted on Twitter.`)
                         ?.catch(() => logger.error('Failed to update proposal message.'))
                     delete db.data[guildUuid].twitterProposals[proposalId]

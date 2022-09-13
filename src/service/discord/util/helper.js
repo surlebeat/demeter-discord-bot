@@ -25,3 +25,16 @@ export const getTwitterOauth2ClientIdFor = (guildUuid) => {
 export const getTwitterOauth2ClientSecretFor = (guildUuid) => {
   return process.env['TWITTER_OAUTH2_CLIENT_SECRET_' + guildUuid]
 }
+
+/**
+ * Return post content based on a given array of string containing the proposal paragraph
+ * @param tokens - The Array of string containing the proposal paragraph
+ * @returns {string}
+ */
+export const getPostContent = (tokens) => {
+  let postContent = '';
+  for(let i = 2; i < tokens.length; i++) {
+    postContent += `\n\n${tokens[i]}`
+  }
+  return postContent;
+}

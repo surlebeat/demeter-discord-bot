@@ -7,6 +7,7 @@ import {
 } from "../../discord/util/helper.js";
 import {TwitterApi} from "twitter-api-v2";
 import Moment from "moment";
+import {decrypt, encrypt} from "../../discord/util/encryption.js";
 
 const clients = {}
 
@@ -21,27 +22,28 @@ export const postOnTwitter = async (content, messageReaction, guildUuid, db) => 
         return link
     } catch (e) {
         logger.error(e)
-        await messageReaction.channel.send('Could not post on Twitter. Ask an admin to go check the logs to fix this error.')
+        await messageReaction.message.channel.send('Could not post on Twitter. Ask an admin to go check the logs to fix this error.')
         return null
     }
 }
 
 const getClientFor = (guildUuid, db) => {
+    console.log(db.data[guildUuid].config.twitterRefreshToken, decrypt(db.data[guildUuid].config.twitterRefreshToken), db.data[guildUuid].config.twitterAccessToken, decrypt(db.data[guildUuid].config.twitterAccessToken))
     let client = clients[guildUuid]
     if (!client) {
         logger.debug(`Creating a Twitter client for ${guildUuid}`)
         const autoRefresherPlugin = new TwitterApiAutoTokenRefresher({
-            refreshToken: db.data[guildUuid].config.twitterRefreshToken,
+            refreshToken: decrypt(db.data[guildUuid].config.twitterRefreshToken),
             refreshCredentials: {
                 clientId: getTwitterOauth2ClientIdFor(guildUuid),
                 clientSecret: getTwitterOauth2ClientSecretFor(guildUuid)
             },
             onTokenUpdate: (token) => {
-                db.data[guildUuid].config.twitterAccessToken = token.accessToken
-                db.data[guildUuid].config.twitterRefreshToken = token.refreshToken
+                db.data[guildUuid].config.twitterAccessToken = encrypt(token.accessToken)
+                db.data[guildUuid].config.twitterRefreshToken = encrypt(token.refreshToken)
             },
         })
-        client = new TwitterApi(db.data[guildUuid].config.twitterAccessToken, {plugins: [autoRefresherPlugin]})
+        client = new TwitterApi(decrypt(db.data[guildUuid].config.twitterAccessToken), {plugins: [autoRefresherPlugin]})
         clients[guildUuid] = client
         logger.debug(`Creating a Twitter client for ${guildUuid} done.`)
     }

@@ -14,6 +14,7 @@ import {
 import {COMMANDS_NAME} from '../../index.js'
 import {makeGuild} from '../../../../core/index.js'
 import {makeDiscord} from '../../../data/index.js'
+import {encrypt} from "../../../util/encryption.js";
 
 
 /**
@@ -487,7 +488,7 @@ export const setTwitterAccessToken = async (token, guildUuid, db, mutex) => basi
     guildUuid,
     async () => true,
     async (guildDb) => {
-        guildDb.config.twitterAccessToken = token
+        guildDb.config.twitterAccessToken = encrypt(token)
         return guildDb
     }, db, mutex)
 
@@ -503,7 +504,7 @@ export const setTwitterRefreshToken = async (token, guildUuid, db, mutex) => bas
     guildUuid,
     async () => true,
     async (guildDb) => {
-        guildDb.config.twitterRefreshToken = token
+        guildDb.config.twitterRefreshToken = encrypt(token)
         return guildDb
     }, db, mutex)
 

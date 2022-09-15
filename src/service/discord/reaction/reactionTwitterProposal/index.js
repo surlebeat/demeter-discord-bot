@@ -82,19 +82,21 @@ const voteOnProposal = async (messageReaction, user, guildUuid, db, mutex) => {
 
             const postLink = await postOnTwitter(proposal.postContent, messageReaction, guildUuid, db)
 
-            await messageReaction?.message
-                ?.edit(tokens[0]
-                    + getPostContent(tokens)
-                    + `\n\n✅ ${sumForCount} users(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumFor)} reputations - ${nbInFavorMembers} members)`
-                    + `\n❌ ${sumAgainstCount} users(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumAgainst)} reputations)`
-                    + `\n**The proposal is accepted!** The content has been posted on Twitter :`
-                    + `\n${postLink}`
-                )
-                ?.catch(() => logger.error('Failed to update proposal message.'))
-            delete db.data[guildUuid].twitterProposals[messageReaction?.message?.id]
-            await db.write()
+            if (postLink) {
+                await messageReaction?.message
+                    ?.edit(tokens[0]
+                        + getPostContent(tokens)
+                        + `\n\n✅ ${sumForCount} users(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumFor)} reputations - ${nbInFavorMembers} members)`
+                        + `\n❌ ${sumAgainstCount} users(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumAgainst)} reputations)`
+                        + `\n**The proposal is accepted!** The content has been posted on Twitter :`
+                        + `\n${postLink}`
+                    )
+                    ?.catch(() => logger.error('Failed to update proposal message.'))
+                delete db.data[guildUuid].twitterProposals[messageReaction?.message?.id]
+                await db.write()
 
-            logger.debug('Update proposal message and post on Twitter done.')
+                logger.debug('Update proposal message and post on Twitter done.')
+            }
         })
 
         return true

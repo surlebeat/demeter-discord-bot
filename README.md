@@ -172,6 +172,9 @@ Don't forget to set those 3 environment variables :
 `TWITTER_OAUTH2_CLIENT_SECRET_YOURGUILDUUID`
 `ENCRYPTION_KEY`
 
+Please, be aware that anyone running your bot could use the bot permissions to tweet with the linked account.
+A good reason to opt for the self-hosted installation!
+
 ## Pantheon
 
 To reward a member who has made a significant contribution, it is possible by mentioning his work in the channel configured as the pantheon with the command `/guild config channel-pantheon:#🏅-panthéon channel-pantheon-enable:True`.  

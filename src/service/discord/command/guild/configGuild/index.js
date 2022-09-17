@@ -688,7 +688,7 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
         const minReputationIgnore = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_IGNORE.name)?.value
         if (minReputationIgnore)
             if (!await setMinReputationIgnore(minReputationIgnore, guildUuid, db, mutex))
-                response += 'The minimum reputation to ignore a message should be a number(0 = ignore functionality disabled)'
+                response += 'The minimum reputation to ignore a message should be a number(0 = ignore feature disabled)'
 
         const reactionTransferReaction = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_REACTION.name)?.value
         const reactionTransferChannel = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_CHANNEL.name)?.value

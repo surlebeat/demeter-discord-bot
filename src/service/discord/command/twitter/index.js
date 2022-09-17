@@ -70,7 +70,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
         if (!twitterMinRepProposal) {
             await interaction
                 ?.reply({
-                    content: 'This functionality is disabled. Configure Twitter minimum reputation proposal to enable it !',
+                    content: 'This feature is disabled. Configure Twitter minimum reputation proposal to enable it !',
                     ephemeral: true
                 })
                 ?.catch(() => logger.error('Reply interaction failed.'))
@@ -80,7 +80,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
         if (!db.data[guildUuid].config.twitterRefreshToken) {
             await interaction
                 ?.reply({
-                    content: 'This functionality is disabled. Configure Twitter refresh token to enable it !',
+                    content: 'This feature is disabled. Configure Twitter refresh token to enable it !',
                     ephemeral: true
                 })
                 ?.catch(() => logger.error('Reply interaction failed.'))
@@ -90,7 +90,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
         if (!db.data[guildUuid].config.twitterAccessToken) {
             await interaction
                 ?.reply({
-                    content: 'This functionality is disabled. Configure Twitter access token to enable it !',
+                    content: 'This feature is disabled. Configure Twitter access token to enable it !',
                     ephemeral: true
                 })
                 ?.catch(() => logger.error('Reply interaction failed.'))
@@ -100,7 +100,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
         if (!getTwitterOauth2ClientIdFor(guildUuid)) {
             await interaction
                 ?.reply({
-                    content: 'This functionality is disabled. Ask a technical admin to configure the environment variable TWITTER_OAUTH2_CLIENT_ID_YOURGUILDUUID !',
+                    content: 'This feature is disabled. Ask a technical admin to configure the environment variable TWITTER_OAUTH2_CLIENT_ID_YOURGUILDUUID !',
                     ephemeral: true
                 })
                 ?.catch(() => logger.error('Reply interaction failed.'))
@@ -110,7 +110,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
         if (!getTwitterOauth2ClientSecretFor(guildUuid)) {
             await interaction
                 ?.reply({
-                    content: 'This functionality is disabled. Ask a technical admin to configure the environment variable TWITTER_OAUTH2_CLIENT_SECRET_YOURGUILDUUID !',
+                    content: 'This feature is disabled. Ask a technical admin to configure the environment variable TWITTER_OAUTH2_CLIENT_SECRET_YOURGUILDUUID !',
                     ephemeral: true
                 })
                 ?.catch(() => logger.error('Reply interaction failed.'))
@@ -120,7 +120,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
         if (!twitterMinRepProposal) {
             await interaction
                 ?.reply({
-                    content: 'This functionality is disabled. Configure Twitter minimum reputation proposal to enable it !',
+                    content: 'This feature is disabled. Configure Twitter minimum reputation proposal to enable it !',
                     ephemeral: true
                 })
                 ?.catch(() => logger.error('Reply interaction failed.'))
@@ -131,7 +131,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
             await interaction
                 ?.reply({
                     content: 'Starting a proposal is a right reserved for Twitter admins exclusively !' +
-                        '\n\nYou should hide this functionality to other roles by toggling the option in the Discord Server parameters. ' +
+                        '\n\nYou should hide this feature to other roles by toggling the option in the Discord Server parameters. ' +
                         'Look for application commands under the "Integration" panel.',
                     ephemeral: true
                 })

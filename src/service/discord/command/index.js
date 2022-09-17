@@ -387,7 +387,7 @@ export const COMMANDS = [
                     }, {
                         type: ApplicationCommandOptionTypes.NUMBER,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_IGNORE.name,
-                        description: 'Minimum reputation to ignore a message(0 = ignore functionality disabled)',
+                        description: 'Minimum reputation to ignore a message(0 = ignore feature disabled)',
                     }, {
                         type: ApplicationCommandOptionTypes.NUMBER,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_REPUTATION.name,

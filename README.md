@@ -75,8 +75,8 @@ x = reputation
 m = min reputation decay(0.05)  
 M = max reputation decay(0.25)  
 s = standard deviation of active members(reputation > min reputation)  
-![Formula reputation decay](decay-formula.png?raw=true "Formula reputation decay")  
-![Formula reputation chart](decay-chart.png?raw=true "Formula reputation chart")  
+![Formula reputation decay](images/readme/decay-formula.png?raw=true "Formula reputation decay")  
+![Formula reputation chart](images/readme/decay-chart.png?raw=true "Formula reputation chart")  
 Example with a standard deviation of 50  
 
 
@@ -89,7 +89,7 @@ The amount allocated to Quadratic Funding is 100 reputation points in addition t
 This grant is weighted by the person's role and seniority who helps you gain this reputation to avoid bot attacks again.  
 A person who has just arrived will make you earn less than a member who has been active for 3 months.
 
-![Formula seniority](seniority.png?raw=true "Formula seniority")  
+![Formula seniority](images/readme/seniority.png?raw=true "Formula seniority")  
 Example of seniority computation
 
 ### Visualization
@@ -99,14 +99,14 @@ The switch "manual/auto" will automatically jump to the next round.
 The switch "all/active" allows to hide the members who were not active during the round.  
 The switch "animation/static" allows to activate or not the animations.  
 The switch "received/sent" allows to see the reputation received or given during the round by passing the mouse over the members.  
-![Vizualize](visualize.gif?raw=true "Captcha")
+![Vizualize](images/readme/visualize.gif?raw=true "Captcha")
 
 ## Captcha
 
 The bot provides a captcha without DM to reduce the risk of scams impersonating the bot.  
 You can type `/button captcha` to display the button that will offer the user to solve the Captcha.  
 The user will then have to find 3 times successively the emoji hidden in the image, he will be granted the captcha-role(`/guild config captcha-role:@🥚Humain.e`).  
-![Captcha](captcha.png?raw=true "Captcha")
+![Captcha](images/readme/captcha.png?raw=true "Captcha")
 
 ## Role based on reputation
 
@@ -119,7 +119,7 @@ By creating custom emoji you can allow your members to move off-topic messages t
 You must first define the minimum reputation needed to move a message, for example, 200 `/guild config-2 reaction-transfer-reputation:200`(0=disabled)  
 Then for each channel you can create a custom emoji that members will use to redirect messages, for example:  
 `/guild config-2 reaction-transfer-reputation::hs_bar: reaction-transfer-channel:#🍹-bar` this emoji will redirect a message in the channel bar, with a custom emoji "hs_bar" like the one below.  
-![hs_bar](hs_bar.png?raw=true "hs_bar")  
+![hs_bar](images/readme/hs_bar.png?raw=true "hs_bar")  
 As soon as the minimum reputation has reacted with this emoji to the message, it will be transferred.  
 You can override the minimum reputation using the `reaction-transfer-override-repu` option.
 The `reaction-transfer-delete` option is also optional and defaults to _true (yes)_. You can specify the value _false_ if you would like that the original message remains.
@@ -268,7 +268,7 @@ Allow your member to transfer a message to a different channel by using a custom
 
 `/guild config reaction-transfer-reputation::hs_bar: reaction-transfer-channel:#🍹-bar`  
 Transfer a message if more than X reputation use this emoji  
-![hs_bar](hs_bar.png?raw=true "hs_bar")
+![hs_bar](images/readme/hs_bar.png?raw=true "hs_bar")
 
 `/guild config-2 min-rep-start-proposal:500 min-rep-confirm-proposal:2000 channel-proposal:#📜-proposition`  
 To propose a vote, you need to gather 500 reputations (0=disabled).  

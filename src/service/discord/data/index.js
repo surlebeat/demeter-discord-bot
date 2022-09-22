@@ -141,6 +141,7 @@ export const makeDiscord = {
      * @param reputationRoles - Add/remove this role if enough reputation {role: minReputation}
      * @param reactionTransfers - If user react transfer message to this channel {reaction: channel}
      * @param discordProposals - Discord proposals {sourceMessageId: DiscordProposal}
+     * @param twitterProposals - Twitter post proposals {sourceMessageId: TwitterPostProposal}
      * @param discordMutedUsers - User muted {userDiscordId: DiscordMute}
      * @param blacklist - Blacklist of user discord id.
      * @returns {{discordMutedUsers: {}, reactionTransfers: {}, discordProposals: {}, reputationRoles: {}, guildDiscordId, reactionRoles: {}}}
@@ -151,6 +152,7 @@ export const makeDiscord = {
         reputationRoles={},
         reactionTransfers={},
         discordProposals= {},
+        twitterProposals= {},
         discordMutedUsers= {},
         blacklist = {},
         ) => ({
@@ -159,7 +161,28 @@ export const makeDiscord = {
         reputationRoles,
         reactionTransfers,
         discordProposals,
+        twitterProposals,
         discordMutedUsers,
         blacklist,
-    })
+    }),
+
+    /**
+     * Twitter post proposal
+     * @param endDate - When the vote end
+     * @param postContent - The content to be posted on Twitter
+     * @param channelId - Discord channel id of proposal
+     * @param targetMessageId - Discord message id of the targeted message
+     * @returns {{endDate: string, postContent: string, channelId: string, targetMessageId: string}}
+     */
+    makeTwitterPostProposal: (
+      endDate='',
+      postContent = '',
+      channelId = '',
+      targetMessageId = ''
+    ) => ({
+        endDate,
+        postContent,
+        channelId,
+        targetMessageId
+    }),
 }

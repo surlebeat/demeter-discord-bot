@@ -4,6 +4,7 @@ import {processReactionTransfer} from './reactionTransfer/index.js'
 import {processReactionGrant} from './reactionGrant/index.js'
 import {processProposal} from './reactionProposal/index.js'
 import {checkIgnored} from '../message/ignore/index.js';
+import {processTwitterProposal} from "./reactionTwitterProposal/index.js";
 
 /**
  *
@@ -33,6 +34,7 @@ export const processReaction = async (messageReaction, user, isRemove, db, mutex
         await processReactionRole(messageReaction, user, isRemove, guildUuid, db, mutex)
         await processReactionTransfer(messageReaction, user, isRemove, guildUuid, db, mutex)
         await processProposal(messageReaction, user, isRemove, guildUuid, db, mutex)
+        await processTwitterProposal(messageReaction, user, isRemove, guildUuid, db, mutex)
         return true
     } catch (e) {
         logger.error(e)

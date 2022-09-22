@@ -11,6 +11,7 @@ import {processReaction} from './service/discord/reaction/index.js'
 import {checkEndProposal} from './service/discord/proposal/index.js'
 import logger from './service/core/winston/index.js';
 import {checkPoHVouches} from './service/core/proofOfHumanity/index.js';
+import {checkEndTwitterProposal} from "./service/core/twitter/index.js";
 
 (async () => {
     process.env.SALT = {}
@@ -43,6 +44,7 @@ import {checkPoHVouches} from './service/core/proofOfHumanity/index.js';
     const heartbeat = createHeartBeat(undefined, undefined, [
         {modulo: 6, func: async () => await persistDb(clientWeb3, db, mutex)},
         {modulo: 6, func: async () => await checkPoHVouches(db, mutex)},
+        {modulo: 2, func: async () => await checkEndTwitterProposal(db, mutex, {client: clientDiscord})},
         {modulo: 2, func: async () => await checkEndRound(db, mutex, {client: clientDiscord})},
         {modulo: 2, func: async () => await checkEndProposal(db, mutex, {client: clientDiscord})},
     ])

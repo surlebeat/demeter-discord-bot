@@ -14,6 +14,7 @@ import {
 import {COMMANDS_NAME} from '../../index.js'
 import {makeGuild} from '../../../../core/index.js'
 import {makeDiscord} from '../../../data/index.js'
+import {encrypt} from "../../../util/encryption.js";
 
 
 /**
@@ -396,6 +397,118 @@ export const setMinReputationIgnore = async (reputation, guildUuid, db, mutex) =
     }, db, mutex)
 
 /**
+ * Update the Twitter admin role
+ * @param role - Twitter admin role
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setTwitterAdminRole = async (role, guildUuid, db, mutex) => basicSetter(
+    guildUuid,
+    async () => true,
+    async (guildDb) => {
+        guildDb.config.twitterAdminRole = role
+        return guildDb
+    }, db, mutex)
+
+/**
+ * Update the Twitter member role
+ * @param role - Twitter member role
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setTwitterMemberRole = async (role, guildUuid, db, mutex) => basicSetter(
+    guildUuid,
+    async () => true,
+    async (guildDb) => {
+        guildDb.config.twitterMemberRole = role
+        return guildDb
+    }, db, mutex)
+
+/**
+ * Update the Twitter proposal duration
+ * @param duration - Twitter proposal duration
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setTwitterProposalDuration = async (duration, guildUuid, db, mutex) => basicSetter(
+    guildUuid,
+    async () => typeof duration === "number" && duration > 0,
+    async (guildDb) => {
+        guildDb.config.twitterProposalDuration = duration
+        return guildDb
+    }, db, mutex)
+
+/**
+ * Update the Twitter minimum reputation required to validate a proposal
+ * @param reputation - Twitter proposal minimum reputation
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setTwitterMinRepProposal = async (reputation, guildUuid, db, mutex) => basicSetter(
+    guildUuid,
+    async () => typeof reputation === "number" && reputation >= 0,
+    async (guildDb) => {
+        guildDb.config.twitterMinRepProposal = reputation
+        return guildDb
+    }, db, mutex)
+
+/**
+ * Update the Twitter proposal duration
+ * @param minInFavorMembers - Twitter proposal minimum in favor members
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setTwitterMinInFavorMembers = async (minInFavorMembers, guildUuid, db, mutex) => basicSetter(
+    guildUuid,
+    async () => typeof minInFavorMembers === "number" && minInFavorMembers > 0,
+    async (guildDb) => {
+        guildDb.config.twitterMinInFavorMembers = minInFavorMembers
+        return guildDb
+    }, db, mutex)
+
+/**
+ * Update the Twitter access token used to authenticate against the Twitter API v2
+ * @param token - Twitter access token
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setTwitterAccessToken = async (token, guildUuid, db, mutex) => basicSetter(
+    guildUuid,
+    async () => true,
+    async (guildDb) => {
+        guildDb.config.twitterAccessToken = encrypt(token)
+        return guildDb
+    }, db, mutex)
+
+/**
+ * Update the Twitter refresh token used to authenticate against the Twitter API v2
+ * @param token - Twitter refresh token
+ * @param guildUuid - Guild unique identifier
+ * @param db - In-memory database
+ * @param mutex - Mutex to access the database safely
+ * @returns {Promise<boolean>}
+ */
+export const setTwitterRefreshToken = async (token, guildUuid, db, mutex) => basicSetter(
+    guildUuid,
+    async () => true,
+    async (guildDb) => {
+        guildDb.config.twitterRefreshToken = encrypt(token)
+        return guildDb
+    }, db, mutex)
+
+/**
  * Initialize the guild
  * @param guildDiscordId - Guild discord id
  * @param db - in-memory database
@@ -435,8 +548,10 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
             ?.find(d => d?.name === COMMANDS_NAME.GUILD.CONFIG.name)?.options
         const options2 = interaction?.options?.data
             ?.find(d => d?.name === COMMANDS_NAME.GUILD.CONFIG_2.name)?.options
+        const optionsTwitter = interaction?.options?.data
+            ?.find(d => d?.name === COMMANDS_NAME.GUILD.CONFIG_TWITTER.name)?.options
 
-        if (!options && !options2) return false
+        if (!options && !options2 &&!optionsTwitter) return false
 
         let isAdmin = interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)
 
@@ -573,7 +688,7 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
         const minReputationIgnore = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_IGNORE.name)?.value
         if (minReputationIgnore)
             if (!await setMinReputationIgnore(minReputationIgnore, guildUuid, db, mutex))
-                response += 'The minimum reputation to ignore a message should be a number(0 = ignore functionality disabled)'
+                response += 'The minimum reputation to ignore a message should be a number(0 = ignore feature disabled)'
 
         const reactionTransferReaction = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_REACTION.name)?.value
         const reactionTransferChannel = options2?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_CHANNEL.name)?.value
@@ -587,6 +702,33 @@ export const configGuild = async (interaction, guildUuid, db, mutex) => {
         if (typeof reactionTransferReputation === 'number')
             if (!await setReactionTransferReputation(reactionTransferReputation, guildUuid, db, mutex))
                 response += 'The minimum reputation to transfer a message should be a number(0 = no transfer)'
+
+        const twitterAdminRole = optionsTwitter?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_TWITTER.TWITTER_ADMIN_ROLE.name)?.value
+        if (twitterAdminRole)
+            if (!await setTwitterAdminRole(twitterAdminRole, guildUuid, db, mutex))
+                response += 'Please select a role'
+        const twitterMemberRole = optionsTwitter?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_TWITTER.TWITTER_MEMBER_ROLE.name)?.value
+        if (twitterMemberRole)
+            if (!await setTwitterMemberRole(twitterMemberRole, guildUuid, db, mutex))
+                response += 'Please select a role'
+        const twitterProposalDuration = optionsTwitter?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_TWITTER.PROPOSAL_DURATION.name)?.value
+        if (twitterProposalDuration !== undefined)
+            if (!await setTwitterProposalDuration(twitterProposalDuration, guildUuid, db, mutex))
+                response += 'The minimum duration must be a non-null positive number (in days)'
+        const twitterMinRepProposal = optionsTwitter?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_TWITTER.MIN_REPUTATION_PROPOSAL.name)?.value
+        if (twitterMinRepProposal !== undefined)
+            if (!await setTwitterMinRepProposal(twitterMinRepProposal, guildUuid, db, mutex))
+                response += 'The minimum reputation must be a positive number'
+        const twitterMinInFavorMembers = optionsTwitter?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_TWITTER.MIN_IN_FAVOR_MEMBERS.name)?.value
+        if (twitterMinInFavorMembers !== undefined)
+            if (!await setTwitterMinInFavorMembers(twitterMinInFavorMembers, guildUuid, db, mutex))
+                response += 'The minimum in favor members must be a non-null positive number'
+        const twitterAccessToken = optionsTwitter?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_TWITTER.ACCESS_TOKEN.name)?.value
+        if (twitterAccessToken)
+            !await setTwitterAccessToken(twitterAccessToken, guildUuid, db, mutex)
+        const twitterRefreshToken = optionsTwitter?.find(o => o?.name === COMMANDS_NAME.GUILD.CONFIG_TWITTER.REFRESH_TOKEN.name)?.value
+        if (twitterRefreshToken)
+            await setTwitterRefreshToken(twitterRefreshToken, guildUuid, db, mutex)
 
         await interaction
             ?.reply({content: response || 'Done !', ephemeral: true})

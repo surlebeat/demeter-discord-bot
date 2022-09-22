@@ -11,6 +11,7 @@ import {processProposal} from './proposal/index.js'
 import {processUser} from './user/index.js'
 import {processGiveaway} from "./giveaway/index.js";
 import {processProofOfHumanity} from './proofOfHumanity/index.js';
+import {processTwitter} from './twitter/index.js';
 
 export const COMMANDS_NAME = {
     GUILD: {
@@ -72,6 +73,17 @@ export const COMMANDS_NAME = {
             REACTION_TRANSFER_CHANNEL: {name: 'reaction-transfer-channel'},
             REACTION_TRANSFER_OVERRIDE_REPUTATION: {name: 'reaction-transfer-override-repu'},
             REACTION_TRANSFER_DELETE: {name: 'reaction-transfer-delete'},
+        },
+        CONFIG_TWITTER: {
+            name: 'config-twitter',
+
+            TWITTER_ADMIN_ROLE: {name: 'twitter-admin-role'},
+            TWITTER_MEMBER_ROLE: {name: 'twitter-member-role'},
+            PROPOSAL_DURATION: {name: 'twitter-proposal-duration'},
+            MIN_REPUTATION_PROPOSAL: {name: 'twitter-min-rep-proposal'},
+            MIN_IN_FAVOR_MEMBERS: {name: 'twitter-min-in-favor-members'},
+            ACCESS_TOKEN: {name: 'twitter-access-token'},
+            REFRESH_TOKEN: {name: 'twitter-refresh-token'},
         },
         DB_URL: { name: 'db-url'}
     },
@@ -234,6 +246,9 @@ export const COMMANDS_NAME = {
         THANK_VOUCHER: {
             name: 'thank-voucher'
         }
+    },
+    TWITTER_POST: {
+        name: 'Tweet with Demeter'
     }
 }
 
@@ -372,7 +387,7 @@ export const COMMANDS = [
                     }, {
                         type: ApplicationCommandOptionTypes.NUMBER,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.MIN_REPUTATION_IGNORE.name,
-                        description: 'Minimum reputation to ignore a message(0 = ignore functionality disabled)',
+                        description: 'Minimum reputation to ignore a message(0 = ignore feature disabled)',
                     }, {
                         type: ApplicationCommandOptionTypes.NUMBER,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_REPUTATION.name,
@@ -393,6 +408,48 @@ export const COMMANDS = [
                         type: ApplicationCommandOptionTypes.BOOLEAN,
                         name: COMMANDS_NAME.GUILD.CONFIG_2.REACTION_TRANSFER_DELETE.name,
                         description: 'Whether the original message should be deleted after transfer (defaults to true)',
+                    }
+                ]
+            },
+            {
+                type: ApplicationCommandOptionTypes.SUB_COMMAND,
+                name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.name,
+                description: 'Config guild Twitter (admin only). This feature allows content curation for Twitter posts.',
+                options: [
+                    {
+                        type: ApplicationCommandOptionTypes.ROLE,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.TWITTER_ADMIN_ROLE.name,
+                        description: 'The Discord role of Twitter admins. They will be the only ones allowed to start a proposal.',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.ROLE,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.TWITTER_MEMBER_ROLE.name,
+                        description: 'The Discord role of Twitter members. .',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.PROPOSAL_DURATION.name,
+                        description: 'Proposal\'s duration in days(>0)',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.MIN_REPUTATION_PROPOSAL.name,
+                        description: 'How much reputation to validate a Twitter proposal (0 = no vote)',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.NUMBER,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.MIN_IN_FAVOR_MEMBERS.name,
+                        description: 'How much in favor members are required to post the content on Twitter',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.STRING,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.ACCESS_TOKEN.name,
+                        description: 'The access token that will be used to authenticate against the Twitter API v2',
+                    },
+                    {
+                        type: ApplicationCommandOptionTypes.STRING,
+                        name: COMMANDS_NAME.GUILD.CONFIG_TWITTER.REFRESH_TOKEN.name,
+                        description: 'The refresh token that will be used to authenticate against the Twitter API v2',
                     }
                 ]
             },
@@ -737,6 +794,9 @@ export const COMMANDS = [
                 description: 'Thank your voucher and unregister from the list of candidates'
             },
         ]
+    },
+    {
+        name: COMMANDS_NAME.TWITTER_POST.name, type: 3
     }
 ]
 
@@ -770,6 +830,7 @@ const processCommand = async (interaction, db, mutex, salt, noiseImg, clientWeb3
         if(await processProposal(interaction, guildUuid, db, mutex))return true
         if(await processGiveaway(interaction, guildUuid, db, mutex))return true
         if(await processProofOfHumanity(interaction, guildUuid, db, mutex))return true
+        if(await processTwitter(interaction, guildUuid, db, mutex))return true
 
         if(await processButton(interaction, guildUuid, db, mutex, salt, noiseImg))return true
 

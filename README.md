@@ -12,6 +12,7 @@ This text is partially generated via an online translator, as I never had any En
  - Assign roles based on reputation
  - Move off-topic messages to another channel directly managed by trusted members of your community
  - Poll your community via reputation-weighted proposals
+ - Allow anyone to propose Twitter posts. Once accepted by your community, Demeter automatically posts them.
  - Reward directly or via proposal your most active members
  - Giveaway weighted by reputation or not
  - Mute a member via vote
@@ -74,8 +75,8 @@ x = reputation
 m = min reputation decay(0.05)  
 M = max reputation decay(0.25)  
 s = standard deviation of active members(reputation > min reputation)  
-![Formula reputation decay](decay-formula.png?raw=true "Formula reputation decay")  
-![Formula reputation chart](decay-chart.png?raw=true "Formula reputation chart")  
+![Formula reputation decay](images/readme/decay-formula.png?raw=true "Formula reputation decay")  
+![Formula reputation chart](images/readme/decay-chart.png?raw=true "Formula reputation chart")  
 Example with a standard deviation of 50  
 
 
@@ -88,7 +89,7 @@ The amount allocated to Quadratic Funding is 100 reputation points in addition t
 This grant is weighted by the person's role and seniority who helps you gain this reputation to avoid bot attacks again.  
 A person who has just arrived will make you earn less than a member who has been active for 3 months.
 
-![Formula seniority](seniority.png?raw=true "Formula seniority")  
+![Formula seniority](images/readme/seniority.png?raw=true "Formula seniority")  
 Example of seniority computation
 
 ### Visualization
@@ -98,14 +99,14 @@ The switch "manual/auto" will automatically jump to the next round.
 The switch "all/active" allows to hide the members who were not active during the round.  
 The switch "animation/static" allows to activate or not the animations.  
 The switch "received/sent" allows to see the reputation received or given during the round by passing the mouse over the members.  
-![Vizualize](visualize.gif?raw=true "Captcha")
+![Vizualize](images/readme/visualize.gif?raw=true "Captcha")
 
 ## Captcha
 
 The bot provides a captcha without DM to reduce the risk of scams impersonating the bot.  
 You can type `/button captcha` to display the button that will offer the user to solve the Captcha.  
 The user will then have to find 3 times successively the emoji hidden in the image, he will be granted the captcha-role(`/guild config captcha-role:@🥚Humain.e`).  
-![Captcha](captcha.png?raw=true "Captcha")
+![Captcha](images/readme/captcha.png?raw=true "Captcha")
 
 ## Role based on reputation
 
@@ -118,7 +119,7 @@ By creating custom emoji you can allow your members to move off-topic messages t
 You must first define the minimum reputation needed to move a message, for example, 200 `/guild config-2 reaction-transfer-reputation:200`(0=disabled)  
 Then for each channel you can create a custom emoji that members will use to redirect messages, for example:  
 `/guild config-2 reaction-transfer-reputation::hs_bar: reaction-transfer-channel:#🍹-bar` this emoji will redirect a message in the channel bar, with a custom emoji "hs_bar" like the one below.  
-![hs_bar](hs_bar.png?raw=true "hs_bar")  
+![hs_bar](images/readme/hs_bar.png?raw=true "hs_bar")  
 As soon as the minimum reputation has reacted with this emoji to the message, it will be transferred.  
 You can override the minimum reputation using the `reaction-transfer-override-repu` option.
 The `reaction-transfer-delete` option is also optional and defaults to _true (yes)_. You can specify the value _false_ if you would like that the original message remains.
@@ -132,6 +133,47 @@ Start a vote with the following command:
 If you get 500 reputation points, a vote will be launched in 📜-proposition, it will then be necessary that this proposal gets 2000 reputation points within the 5 days for the vote to be considered valid.
 
 It is also possible to offer reputation via a proposal by adding `mint-user:@Charles mint-qty:500` to the previous command.
+
+## Tweet with Demeter
+
+Want to allow your community to propose and vote on Twitter posts? That's also possible!
+Even more : Demeter will automatically post the content on Twitter once the proposal accepted.
+
+Once a member with the twitter-admin role selected a message, a proposal is launched.
+![Select a message](images/readme/tweet-with-demeter-select.png)
+![Proposal](images/readme/tweet-with-demeter-proposal.png)
+Everyone is invited to vote. For a proposal to be accepted, it is necessary that:
+- At least 4000 reputation points have been cast (sum of votes for and against),
+- the majority of reputation points are in favor
+- and that at least 5 people with the role @🐣Apprentice.e are in favor (sybil resistant measure)
+
+A proposal is rejected if:
+- At least 4,000 reputation points have been cast (sum of votes in favor and against)
+- and the majority of reputation points are against
+
+If a proposal is not accepted within 48 hours, it is automatically rejected.
+Once accepted, the content (the message selected by an admin) is automatically posted on Twitter by Demeter.
+
+Example of configuration (`/guild config-twitter`):
+- twitter-admin-role: @Twitter-admin
+- twitter-member-role: @🐣Apprentice.e
+- twitter-proposal-duration: 2 days
+- twitter-min-rep-proposal: 4000
+- twitter-min-in-favor-members: 5
+- twitter-access-token: Token to access the Twitter account that will have to be generated by a @Twitter-admin
+- twitter-refresh-token: Token allowing to get a new access token after its expiration. It must also be generated by a @Twitter-admin. 
+
+The functionality can be disabled by deleting the access token (twitter-access-token).
+You can use Postman to generate the access and refresh tokens : https://developer.twitter.com/en/docs/tutorials/postman-getting-started
+This should only be done once.
+
+Don't forget to set those 3 environment variables :
+`TWITTER_OAUTH2_CLIENT_ID_YOURGUILDUUID`
+`TWITTER_OAUTH2_CLIENT_SECRET_YOURGUILDUUID`
+`ENCRYPTION_KEY`
+
+Please, be aware that anyone running your bot could use the bot permissions to tweet with the linked account.
+A good reason to opt for the self-hosted installation!
 
 ## Pantheon
 
@@ -157,14 +199,14 @@ A member who reacted to this message will be selected.
 Members can register themselves in a list in order to find a voucher.
 Everyone can print the list of candidates and vouch one of them.
 The candidates can thank their vouchers afterwards rewarding them with a preconfigured amount of reputation.
-If the command /guild config-2 poh-vouchers-reward has not been run or if poh-vouchers-reward < 0 then PoH functionality is disabled.
+If the command /guild config-2 poh-vouchers-reward has not been run or if poh-vouchers-reward < 0 then PoH feature is disabled.
 
 ## Flag a message as ignored
 
 Sometimes, you don't want a message to be processed by Demeter and earn reputation. Eg: when tagging _@everyone_ for information sharing.  
 If the owner of a message reacts to his own message with the emoji 🙈 or If the community reacts to a message with the same emoji and the sum of everyone's reputation is greater than MIN_REPUTATION_IGNORE then the message is not taken into account when calculating the reputation by Demeter.  
 Set the MIN_REPUTATION_IGNORE parameter via the `/guild config-2 MIN_REPUTATION_IGNORE 300`  
-If this parameter is not configured or if its value is 0, then the functionality is disabled.
+If this parameter is not configured or if its value is 0, then the feature is disabled.
 
 ## Commands
 
@@ -229,7 +271,7 @@ Allow your member to transfer a message to a different channel by using a custom
 
 `/guild config reaction-transfer-reputation::hs_bar: reaction-transfer-channel:#🍹-bar`  
 Transfer a message if more than X reputation use this emoji  
-![hs_bar](hs_bar.png?raw=true "hs_bar")
+![hs_bar](images/readme/hs_bar.png?raw=true "hs_bar")
 
 `/guild config-2 min-rep-start-proposal:500 min-rep-confirm-proposal:2000 channel-proposal:#📜-proposition`  
 To propose a vote, you need to gather 500 reputations (0=disabled).  
@@ -246,7 +288,7 @@ Print the database URL for this guild
 Add or remove someone from the blacklist, user in blacklist will never be added to the system(eg: useful for bot).
 
 `/guild config-2 poh-vouchers-reward:10`  
-The amount of reputation a voucher will be rewarded if the candidate he vouched thanks him. (not configured or < 0 => PoH functionality disabled)
+The amount of reputation a voucher will be rewarded if the candidate he vouched thanks him. (not configured or < 0 => PoH feature disabled)
 
 `/guild config-2 MIN_REPUTATION_IGNORE 300`  
 To flag a message as ignored, you need to gather 300 reputations (0=disabled).

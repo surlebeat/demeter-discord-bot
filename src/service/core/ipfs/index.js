@@ -1,8 +1,8 @@
 import logger from '../winston/index.js'
-import { Web3Storage, File } from 'web3.storage'
-import moment from "moment";
+import {File, Web3Storage} from 'web3.storage'
+import axios from "axios";
 
-export const makeStorageClient = (token=process.env.WEB3_TOKEN) => new Web3Storage({ token })
+export const makeStorageClient = (token = process.env.WEB3_TOKEN) => new Web3Storage({token})
 
 
 /**
@@ -48,37 +48,12 @@ export const persistDb = async (clientWeb3, db, mutex) => {
 export const loadDb = async (clientWeb3, db, mutex, lastUploadIsCorrupted) => {
     try {
         await mutex.runExclusive(async () => {
-            logger.debug('Fetch last directory...')
-            let lastUpload = null
-            let penultimateUpload = null
-            try {
-                for await (const upload of clientWeb3?.list()) {
-                    if (!lastUpload)lastUpload = upload
-                    if(moment(upload?.created)?.isAfter(moment(lastUpload?.created))) {
-                        lastUpload = upload
-                    }
-                }
-                if(lastUploadIsCorrupted) {
-                    for await (const upload of clientWeb3?.list()) {
-                        if (!penultimateUpload && upload?.cid !== lastUpload?.cid) {
-                            penultimateUpload = upload
-                        }
-                        if(penultimateUpload && upload?.cid !== lastUpload?.cid && moment(upload?.created)?.isAfter(moment(penultimateUpload?.created))) {
-                            penultimateUpload = upload
-                        }
-                    }
-                }
-            }   catch (e) {
-                logger.debug('Fetch last directory failed :', e)
-            }
-            if(!lastUpload) throw Error('Fetch last directory failed.')
-            logger.debug('Fetch last directory done.')
-
+            const lastUploadCid = await retrieveLastUploadCid(lastUploadIsCorrupted)
             logger.debug('Fetch all guild files...')
-            if(lastUploadIsCorrupted) {
-                logger.warn(`Last upload ${lastUpload?.cid} is corrupted. We will then use penultimate upload ${penultimateUpload?.cid} !`)
+            if (lastUploadIsCorrupted) {
+                logger.warn(`Last upload is corrupted. We will then use penultimate upload ${lastUploadCid} !`)
             }
-            let res = await clientWeb3?.get(lastUploadIsCorrupted ? penultimateUpload?.cid : lastUpload?.cid)?.catch((e) => {
+            let res = await clientWeb3?.get(lastUploadCid)?.catch((e) => {
                 logger.error(e);
                 return {ok: false};
             });
@@ -98,7 +73,7 @@ export const loadDb = async (clientWeb3, db, mutex, lastUploadIsCorrupted) => {
         return db
     } catch (e) {
         logger.error(e)
-        if(e.message?.includes('Unexpected end of data')) {
+        if (e.message?.includes('Unexpected end of data')) {
             await loadDb(clientWeb3, db, mutex, true)
         } else {
             await new Promise((resolve) => setTimeout(resolve, 5000))
@@ -106,4 +81,27 @@ export const loadDb = async (clientWeb3, db, mutex, lastUploadIsCorrupted) => {
         }
         return null
     }
+}
+
+/**
+ * Retrieve the cid of the last persisted database from IPFS
+ * @param lastUploadIsCorrupted - True if the last upload is corrupted (e.g.: due to Heroku cycling events)
+ * @returns {Promise<null|Low>}
+ */
+export const retrieveLastUploadCid = async (lastUploadIsCorrupted) => {
+    logger.debug('Fetch last directory...')
+    let lastUpload = null
+    const size = lastUploadIsCorrupted ? 2 : 1
+    try {
+        const headers = {
+            'Authorization': `Bearer ${process.env.WEB3_TOKEN}`
+        }
+        const res = await axios(`https://api.web3.storage/user/uploads?size=${size}`, {headers})
+        lastUpload = res.data
+    } catch (e) {
+        logger.debug('Fetch last directory failed.')
+    }
+    if (!lastUpload || lastUpload.length < size) throw Error('Fetch last directory failed.')
+    logger.debug('Fetch last directory done.')
+    return lastUpload[size - 1].cid;
 }

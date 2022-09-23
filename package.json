@@ -21,6 +21,7 @@
     "@twitter-api-v2/plugin-token-refresher": "^1.0.0",
     "@types/crypto-js": "^4.1.1",
     "async-mutex": "^0.3.2",
+    "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
     "discord.js": "^13.3.1",
     "dotenv": "^16.0.0",

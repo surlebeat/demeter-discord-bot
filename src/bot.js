@@ -38,7 +38,7 @@ import {checkEndTwitterProposal} from "./service/core/twitter/index.js";
         (message) => onMessageCreate(message, clientDiscord, db, mutex),
         async (messageReaction, user) => await processReaction(messageReaction, user, false, db, mutex),
         async (messageReaction, user) => await processReaction(messageReaction, user, true, db, mutex),
-        (interaction) => processCommand(interaction, db, mutex, salt, noiseOriginal, clientWeb3),
+        (interaction) => processCommand(interaction, db, mutex, salt, noiseOriginal),
         async (guild) => await checkWhenNewGuild(guild),)
 
     const heartbeat = createHeartBeat(undefined, undefined, [

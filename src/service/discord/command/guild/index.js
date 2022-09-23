@@ -1,48 +1,32 @@
 import {COMMANDS_NAME} from "../index.js";
 import logger from "../../../core/winston/index.js";
 import {configGuild} from "./configGuild/index.js";
-import moment from "moment";
+import {retrieveLastUploadCid} from "../../../core/ipfs/index.js";
 
 /**
  * Get the last database saved and return link to the json guild
  * @param interaction - Discord interaction
  * @param guildUuid - Guild unique identifier
- * @param db - in-memory database
- * @param mutex - mutex to access database safely
- * @param clientWeb3 - Web3.storage client
  * @returns {Promise<boolean>}
  */
-const printDbUrl = async (interaction, guildUuid, db, mutex, clientWeb3) => {
+const printDbUrl = async (interaction, guildUuid) => {
     try {
         if (!interaction?.options?.data
             ?.find(d => d?.name === COMMANDS_NAME.GUILD.DB_URL.name)) return false
 
         await interaction?.deferReply()
-          ?.catch(() => logger.error('Defer reply interaction failed.'))
-
-        logger.debug('Fetch last directory...')
-        let lastUpload = null
-        try {
-            for await (const upload of clientWeb3?.list()) {
-                if (!lastUpload)lastUpload = upload
-                if(moment(upload?.created)?.isAfter(moment(lastUpload?.created)))lastUpload = upload
-            }
-        }   catch (e) {
-            logger.debug('Fetch last directory failed.')
-        }
-        if(!lastUpload) throw Error('Fetch last directory failed.')
-        logger.debug('Fetch last directory done.')
-
+            ?.catch(() => logger.error('Defer reply interaction failed.'))
+        const lastUploadCid = await retrieveLastUploadCid(false)
         await interaction
-          ?.editReply({content: `https://${lastUpload?.cid}.ipfs.dweb.link/${guildUuid}.json`, ephemeral: true})
-          ?.catch(() => logger.error('Edit reply interaction failed.'))
+            ?.editReply({content: `https://${lastUploadCid}.ipfs.dweb.link/${guildUuid}.json`, ephemeral: true})
+            ?.catch(() => logger.error('Edit reply interaction failed.'))
 
         return true
     } catch (e) {
         logger.error(e)
         await interaction
-            ?.reply({content: 'Something went wrong...', ephemeral: true})
-            ?.catch(() => logger.error('Reply interaction failed.'))
+            ?.editReply({content: 'Something went wrong...', ephemeral: true})
+            ?.catch(() => logger.error('Edit reply interaction failed.'))
         return true
     }
 }
@@ -53,14 +37,13 @@ const printDbUrl = async (interaction, guildUuid, db, mutex, clientWeb3) => {
  * @param guildUuid - Guild unique identifier
  * @param db - in-memory database
  * @param mutex - mutex to access database safely
- * @param clientWeb3 - Web3.storage client
  * @returns {Promise<boolean>}
  */
-export const processGuild = async (interaction, guildUuid, db, mutex, clientWeb3) => {
+export const processGuild = async (interaction, guildUuid, db, mutex) => {
     try {
         if (interaction?.commandName !== COMMANDS_NAME.GUILD.name) return false
 
-        if (await printDbUrl(interaction, guildUuid, db, mutex, clientWeb3)) return true
+        if (await printDbUrl(interaction, guildUuid)) return true
         if (await configGuild(interaction, guildUuid, db, mutex)) return true
 
         return true

@@ -807,10 +807,9 @@ export const COMMANDS = [
  * @param mutex - Mutex to access database safely
  * @param salt - Salt to generate a hash to hide the correct button
  * @param noiseImg - Jimp preloaded noise image
- * @param clientWeb3 - Web3.storage client
  * @returns {Promise<boolean>}
  */
-const processCommand = async (interaction, db, mutex, salt, noiseImg, clientWeb3) => {
+const processCommand = async (interaction, db, mutex, salt, noiseImg) => {
     try {
         if (interaction.type ===  2)return true
 
@@ -821,7 +820,7 @@ const processCommand = async (interaction, db, mutex, salt, noiseImg, clientWeb3
             ?.find(uuid => db?.data[uuid]?.guildDiscordId === interaction?.guildId)
         logger.debug('Get guild uuid done.')
 
-        if(await processGuild(interaction, guildUuid, db, mutex, clientWeb3))return true
+        if(await processGuild(interaction, guildUuid, db, mutex))return true
         if(await processRound(interaction, guildUuid, db, mutex))return true
         if(await processUser(interaction, guildUuid, db, mutex))return true
         if(await processGrant(interaction, guildUuid, db, mutex))return true

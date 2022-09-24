@@ -144,6 +144,7 @@ export const makeDiscord = {
      * @param twitterProposals - Twitter post proposals {sourceMessageId: TwitterPostProposal}
      * @param discordMutedUsers - User muted {userDiscordId: DiscordMute}
      * @param blacklist - Blacklist of user discord id.
+     * @param undeletedTransferredMessages - Ids of message that have been transferred but not deleted. Used to avoid duplicated transfers.
      * @returns {{discordMutedUsers: {}, reactionTransfers: {}, discordProposals: {}, reputationRoles: {}, guildDiscordId, reactionRoles: {}}}
      */
     makeGuild: (
@@ -155,6 +156,7 @@ export const makeDiscord = {
         twitterProposals= {},
         discordMutedUsers= {},
         blacklist = {},
+        undeletedTransferredMessages = {},
         ) => ({
         guildDiscordId,
         reactionRoles,
@@ -164,6 +166,7 @@ export const makeDiscord = {
         twitterProposals,
         discordMutedUsers,
         blacklist,
+        undeletedTransferredMessages,
     }),
 
     /**

@@ -14,8 +14,17 @@ import logger from '../../../core/winston/index.js'
 export const transferMessage = async (messageReaction, user, isRemove, guildUuid, db, mutex) => {
     try {
         await db.read()
-        if(!db?.data[guildUuid]?.reactionTransfers[messageReaction?.emoji?.name]
-            || !db?.data[guildUuid]?.config?.minReputationTransfer)return true
+        let guildDb = db?.data[guildUuid];
+        if(!guildDb?.reactionTransfers[messageReaction?.emoji?.name]
+            || !guildDb?.config?.minReputationTransfer)return true
+
+        if(!guildDb.undeletedTransferredMessages) {
+            guildDb.undeletedTransferredMessages = {}
+        }
+        if(Object.keys(guildDb.undeletedTransferredMessages).includes(messageReaction?.message.id)) {
+            logger.debug('Message has already been moved but not deleted.')
+            return true
+        }
 
         logger.debug('Fetch all reactions...')
         const reactions = await fetchReaction(messageReaction?.message, {})
@@ -27,14 +36,14 @@ export const transferMessage = async (messageReaction, user, isRemove, guildUuid
         logger.debug('Fetch all reactions done.')
 
         logger.debug('Check if enough reputation...')
-        const reactionTransferChannelConfig = db?.data[guildUuid]?.reactionTransfers[messageReaction?.emoji?.name];
-        const allCollectedReputation = [...Object.values(db?.data[guildUuid]?.users)
+        const reactionTransferChannelConfig = guildDb?.reactionTransfers[messageReaction?.emoji?.name];
+        const allCollectedReputation = [...Object.values(guildDb?.users)
             .filter(u => discordIdList?.includes(u?.discordId))
             .map(u => u?.reputations[u?.reputations?.length - 1]), 0]
             .reduce((a, n) => a + n);
         if(reactionTransferChannelConfig.reputation !== undefined && reactionTransferChannelConfig.reputation > allCollectedReputation)
             return true
-        if(reactionTransferChannelConfig.reputation === undefined && db?.data[guildUuid]?.config?.minReputationTransfer > allCollectedReputation)
+        if(reactionTransferChannelConfig.reputation === undefined && guildDb?.config?.minReputationTransfer > allCollectedReputation)
             return true
         logger.debug('Check if enough reputation done.')
 
@@ -54,10 +63,14 @@ export const transferMessage = async (messageReaction, user, isRemove, guildUuid
             ?.send({content: `${message?.author} (transferred by the community) :\n${message?.content}`, files})
             ?.catch(() => logger.error('Failed to transfer message.'))
 
-        if (reactionTransferChannelConfig.deleteMessage === undefined || reactionTransferChannelConfig.deleteMessage === true)
+        if (reactionTransferChannelConfig.deleteMessage === undefined || reactionTransferChannelConfig.deleteMessage === true) {
             await message
                 ?.delete()
                 ?.catch(() => logger.error('Failed to remove original message.'))
+        } else {
+            guildDb.undeletedTransferredMessages[messageReaction?.message.id] = true
+        }
+        await db.write()
         logger.debug('Transfer message done.')
 
         return true

@@ -3,6 +3,7 @@ import logger from '../../../core/winston/index.js';
 import Moment from 'moment';
 import {getTwitterOauth2ClientIdFor, getTwitterOauth2ClientSecretFor} from '../../util/helper.js';
 import {makeDiscord} from "../../data/index.js";
+import {MessageMentions} from 'discord.js';
 
 /**
  *
@@ -10,13 +11,14 @@ import {makeDiscord} from "../../data/index.js";
  * @param guildUuid - Guild unique identifier
  * @param db - in-memory database
  * @param mutex - mutex to access database safely
+ * @param client - Discord Client
  * @returns {Promise<boolean>}
  */
-export const processTwitter = async (interaction, guildUuid, db, mutex) => {
+export const processTwitter = async (interaction, guildUuid, db, mutex, client) => {
     try {
         if (!guildUuid) return true
 
-        if (await proposeTwitterPost(interaction, guildUuid, db, mutex)) return true
+        if (await proposeTwitterPost(interaction, guildUuid, db, mutex, client)) return true
 
         return false;
     } catch (e) {
@@ -34,9 +36,10 @@ export const processTwitter = async (interaction, guildUuid, db, mutex) => {
  * @param guildUuid - Guild unique identifier
  * @param db - in-memory database
  * @param mutex - mutex to access database safely
+ * @param client - Discord Client
  * @returns {Promise<boolean>}
  */
-const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
+const proposeTwitterPost = async (interaction, guildUuid, db, mutex, client) => {
     try {
         if (interaction?.commandName !== COMMANDS_NAME.TWITTER_POST.name) return false
 
@@ -158,7 +161,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
         const targetMessage = await interaction.channel.messages
             ?.fetch(interaction.targetId)
             ?.catch(() => null);
-        const postContent = targetMessage.content
+        const postContent = removeMentions(targetMessage.content, client)
         const startDate = Moment()
         const endDate = Moment(startDate).add(twitterProposalDuration, 'days')
 
@@ -202,4 +205,15 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex) => {
         logger.error(e)
         return true
     }
+}
+
+const removeMentions = (text, client) => {
+    let matches = text.matchAll(MessageMentions.USERS_PATTERN).next().value
+    while (matches) {
+        const id = matches[1]
+        let user = client.users.cache.get(id)
+        text = text.replaceAll(matches[0], `@${user.username}`)
+        matches = text.matchAll(MessageMentions.USERS_PATTERN).next().value
+    }
+    return text
 }

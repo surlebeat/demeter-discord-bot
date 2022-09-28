@@ -807,9 +807,10 @@ export const COMMANDS = [
  * @param mutex - Mutex to access database safely
  * @param salt - Salt to generate a hash to hide the correct button
  * @param noiseImg - Jimp preloaded noise image
+ * @param client - Discord Client
  * @returns {Promise<boolean>}
  */
-const processCommand = async (interaction, db, mutex, salt, noiseImg) => {
+const processCommand = async (interaction, db, mutex, salt, noiseImg, client) => {
     try {
         if (interaction.type ===  2)return true
 
@@ -829,7 +830,7 @@ const processCommand = async (interaction, db, mutex, salt, noiseImg) => {
         if(await processProposal(interaction, guildUuid, db, mutex))return true
         if(await processGiveaway(interaction, guildUuid, db, mutex))return true
         if(await processProofOfHumanity(interaction, guildUuid, db, mutex))return true
-        if(await processTwitter(interaction, guildUuid, db, mutex))return true
+        if(await processTwitter(interaction, guildUuid, db, mutex, client))return true
 
         if(await processButton(interaction, guildUuid, db, mutex, salt, noiseImg))return true
 

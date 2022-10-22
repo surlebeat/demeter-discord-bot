@@ -1,7 +1,11 @@
 import {COMMANDS_NAME} from '../index.js';
 import logger from '../../../core/winston/index.js';
 import Moment from 'moment';
-import {getTwitterOauth2ClientIdFor, getTwitterOauth2ClientSecretFor} from '../../util/helper.js';
+import {
+    formatTweetsForProposal,
+    getTwitterOauth2ClientIdFor,
+    getTwitterOauth2ClientSecretFor
+} from '../../util/helper.js';
 import {makeDiscord} from "../../data/index.js";
 import {MessageMentions} from 'discord.js';
 
@@ -162,13 +166,14 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex, client) => 
             ?.fetch(interaction.targetId)
             ?.catch(() => null);
         const postContent = removeMentions(targetMessage.content, client)
+        const tweets = splitContentIntoTweets(postContent)
         const startDate = Moment()
         const endDate = Moment(startDate).add(twitterProposalDuration, 'days')
 
         logger.debug('Create proposal...')
         let proposalDescription = `<@!${interaction.member.id}> suggests posting the following content on Twitter.`
             + `\n\nYou have until ${endDate?.format('dddd, MMMM Do YYYY, h:mm a')} to vote.`
-            + `\n\n${postContent}`
+            + formatTweetsForProposal(tweets)
 
         const proposalMessage = await interaction.channel
             ?.send(proposalDescription)
@@ -188,7 +193,7 @@ const proposeTwitterPost = async (interaction, guildUuid, db, mutex, client) => 
             db.data[guildUuid].twitterProposals = {}
         db.data[guildUuid].twitterProposals[proposalMessage.id] = makeDiscord.makeTwitterPostProposal(
             endDate,
-            postContent,
+            tweets,
             interaction.channel.id,
             interaction.targetId
         )
@@ -216,4 +221,25 @@ const removeMentions = (text, client) => {
         matches = text.matchAll(MessageMentions.USERS_PATTERN).next().value
     }
     return text
+}
+
+const splitContentIntoTweets = (content, tweets = []) => {
+    const tweetMaxLength = 280
+    if(content?.length > tweetMaxLength) {
+        const slice = content.slice(0, tweetMaxLength)
+        const lastNewLineIndex = slice.lastIndexOf('\n')
+        let tweet;
+        let remainingContent;
+        if(lastNewLineIndex > -1) {
+            tweet = slice.slice(0, lastNewLineIndex)
+            remainingContent = content.slice(lastNewLineIndex)
+        } else {
+            tweet = slice.slice(0, tweetMaxLength - 3) + '...'
+            remainingContent = content.slice(tweetMaxLength - 3)
+        }
+        tweets.push(tweet)
+        return splitContentIntoTweets(remainingContent, tweets)
+    }
+    tweets.push(content)
+    return tweets
 }

@@ -1,7 +1,7 @@
 import logger from "../winston/index.js";
 import {TwitterApiAutoTokenRefresher} from "@twitter-api-v2/plugin-token-refresher";
 import {
-    getPostContent,
+    formatTweetsForProposal,
     getTwitterOauth2ClientIdFor,
     getTwitterOauth2ClientSecretFor
 } from "../../discord/util/helper.js";
@@ -11,13 +11,21 @@ import {decrypt, encrypt} from "../../discord/util/encryption.js";
 
 const clients = {}
 
-export const postOnTwitter = async (content, messageReaction, guildUuid, db) => {
+export const postOnTwitter = async (tweets, messageReaction, guildUuid, db) => {
     try {
         logger.debug('Posting on Twitter...')
         const client = getClientFor(guildUuid, db)
-        const tweetId = (await client.v2.tweet(content)).data.id
-        const username = (await client.v2.me()).data.username
-        const link = `https://twitter.com/${username}/status/${tweetId}`;
+        let link;
+        let previousTweetId;
+        for(const tweetIndex in tweets) {
+            if(tweetIndex === '0') {
+                previousTweetId = (await client.v2.tweet(tweets[tweetIndex])).data.id
+                const username = (await client.v2.me()).data.username
+                link = `https://twitter.com/${username}/status/${previousTweetId}`;
+            } else {
+                previousTweetId = (await client.v2.reply(tweets[tweetIndex], previousTweetId)).data.id
+            }
+        }
         logger.debug(`Posting on Twitter done : ${link}`)
         return link
     } catch (e) {
@@ -28,7 +36,6 @@ export const postOnTwitter = async (content, messageReaction, guildUuid, db) => 
 }
 
 const getClientFor = (guildUuid, db) => {
-    console.log(db.data[guildUuid].config.twitterRefreshToken, decrypt(db.data[guildUuid].config.twitterRefreshToken), db.data[guildUuid].config.twitterAccessToken, decrypt(db.data[guildUuid].config.twitterAccessToken))
     let client = clients[guildUuid]
     if (!client) {
         logger.debug(`Creating a Twitter client for ${guildUuid}`)
@@ -92,7 +99,7 @@ export const checkEndTwitterProposal = async (db, mutex, discord) => {
                     const tokens = proposalMessage?.content.split('\n\n')
                     await proposalMessage?.edit(
                         tokens[0]
-                        + getPostContent(tokens)
+                        + formatTweetsForProposal(proposal.tweets)
                         + `\n\n**The delay expired.** The content will not be posted on Twitter.`)
                         ?.catch(() => logger.error('Failed to update proposal message.'))
                     delete db.data[guildUuid].twitterProposals[proposalId]

@@ -2,7 +2,7 @@ import logger from '../../../core/winston/index.js'
 import {fetchReaction} from '../../util/helperDiscord.js'
 import {findUserUuidByDiscordId} from '../../user/index.js'
 import {postOnTwitter} from "../../../core/twitter/index.js";
-import {getPostContent} from "../../util/helper.js";
+import {formatTweetsForProposal} from "../../util/helper.js";
 
 /**
  * Add/remove vote for a Twitter post proposal, check if there is enough reputation to post on Twitter
@@ -66,7 +66,7 @@ const voteOnProposal = async (messageReaction, user, guildUuid, db, mutex) => {
             if (sumAgainst >= db?.data[guildUuid]?.config?.twitterMinRepProposal) {
                 await messageReaction?.message
                     ?.edit(tokens[0]
-                        + getPostContent(tokens)
+                        + formatTweetsForProposal(proposal.tweets)
                         + `\n\n**More than ${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumAgainst)} reputations voted against the proposal.** The content will not be posted on Twitter.`)
                     ?.catch(() => logger.error('Failed to update proposal message.'))
                 delete db.data[guildUuid].twitterProposals[messageReaction?.message?.id]
@@ -80,12 +80,12 @@ const voteOnProposal = async (messageReaction, user, guildUuid, db, mutex) => {
 
             logger.debug('Update proposal message and post on Twitter...')
 
-            const postLink = await postOnTwitter(proposal.postContent, messageReaction, guildUuid, db)
+            const postLink = await postOnTwitter(proposal.tweets, messageReaction, guildUuid, db)
 
             if (postLink) {
                 await messageReaction?.message
                     ?.edit(tokens[0]
-                        + getPostContent(tokens)
+                        + formatTweetsForProposal(proposal.tweets)
                         + `\n\n✅ ${sumForCount} users(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumFor)} reputations - ${nbInFavorMembers} members)`
                         + `\n❌ ${sumAgainstCount} users(${new Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(sumAgainst)} reputations)`
                         + `\n**The proposal is accepted!** The content has been posted on Twitter :`

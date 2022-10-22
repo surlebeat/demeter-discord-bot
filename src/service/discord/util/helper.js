@@ -27,14 +27,21 @@ export const getTwitterOauth2ClientSecretFor = (guildUuid) => {
 }
 
 /**
- * Return post content based on a given array of string containing the proposal paragraph
- * @param tokens - The Array of string containing the proposal paragraph
+ * Return post content based on a given array of tweets
+ * @param tweets - The Array of tweets
  * @returns {string}
  */
-export const getPostContent = (tokens) => {
-  let postContent = '';
-  for(let i = 2; i < tokens.length; i++) {
-    postContent += `\n\n${tokens[i]}`
+export const formatTweetsForProposal = (tweets) => {
+  let formatted = ''
+  for (const tweetIndex in tweets) {
+    formatted += `\n\n`
+    if(tweetIndex === '0') {
+      formatted += `[Begin]\n`
+    } else {
+      formatted +=  `[Reply n°${tweetIndex}]\n`
+    }
+    formatted += tweets[tweetIndex]
   }
-  return postContent;
+  formatted += `\n[End]`
+  return formatted
 }

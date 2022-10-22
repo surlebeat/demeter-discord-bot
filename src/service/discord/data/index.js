@@ -172,19 +172,19 @@ export const makeDiscord = {
     /**
      * Twitter post proposal
      * @param endDate - When the vote end
-     * @param postContent - The content to be posted on Twitter
+     * @param tweets - The tweets to post on Twitter
      * @param channelId - Discord channel id of proposal
      * @param targetMessageId - Discord message id of the targeted message
-     * @returns {{endDate: string, postContent: string, channelId: string, targetMessageId: string}}
+     * @returns {{endDate: string, tweets: string[], channelId: string, targetMessageId: string}}
      */
     makeTwitterPostProposal: (
       endDate='',
-      postContent = '',
+      tweets = [],
       channelId = '',
       targetMessageId = ''
     ) => ({
         endDate,
-        postContent,
+        tweets,
         channelId,
         targetMessageId
     }),
